@@ -1,0 +1,57 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var get_games_url = "{{=URL('gamedata', 'get_games', user_signature=False)}}";
+    var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
+    var del_post_url = "{{=URL('api', 'del_post', user_signature=True)}}";
+</script>
+{{end}}
+
+<div class="main_content">
+
+    <div id="vue-div" class="display:none">
+         <div class="result_table">
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Game</th>
+                    <th>ID</th>
+                    <th>Release date</th>
+                    <th>More Info</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="game in game_list">
+                    <td></td>
+                    <td>${game.name}</td>
+                    <td>${game.id}</td>
+                    <td>
+                    <table>
+                <tbody>
+                <tr v-for="releaseInfo in game.release">
+                    <td></td>
+                    <td>Platform: ${releaseInfo.platform}</td>
+                    <td>Region: ${releaseInfo.region}</td>
+                    <td>Date: ${releaseInfo.date}</td>
+                  
+                </tr>
+                </tbody>
+            </table>
+                    
+                    </td>
+                    <!---Note more_info is not yet implemented. It's only going to be used for testing.--->
+                    <td><i class="fa fa-gamepad" aria-hidden="true" v-on:click="more_info(game.id)"></i></td>
+                </tr>
+                </tbody>
+            </table>
+    </div>
+    </div>
+
+</div>
+
+</div>
+
+<script src="{{=URL('static', 'js/default_index.js')}}"></script>
