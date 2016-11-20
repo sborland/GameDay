@@ -14,25 +14,46 @@ var app = function() {
     };
     
     
-     function get_gaming_url(month, year) {
+     //Gets the game that is coming out that month
+    //month is a value between 01 to 12 (MUST INCLUDE THE 0 for the single digits)
+    //year is any valid year value
+    function get_gaming_month_url(month, year) {
         var pp = {
             month: month,
             year: year
         };
-        console.log(get_games_url + "?" + $.param(pp))
-        return get_games_url + "?" + $.param(pp);
+        //console.log(get_games_url + "?" + $.param(pp))
+        return get_games_list_url + "?" + $.param(pp);
     }
-    //Gets the game that is coming out that month
-    //month is a value between 01 to 12 (MUST INCLUDE THE 0 for the single digits)
-    //year is any valid year value
+   
     self.get_games = function (month,year) {
-        console.log("HERE!")
-        $.getJSON(get_gaming_url(month,year), function (data) {
+        $.getJSON(get_gaming_month_url(month,year), function (data) {
             self.vue.game_list = data.game_list;
-            console.log(self.vue.game_list);
-        })
-        
+           // console.log(self.vue.game_list);
+        })  
     };
+    
+    
+        
+    //Given ID, returns game data
+    function get_game_url(id) {
+        console.log(id);
+        var pp = {
+            id: id
+        };
+        console.log("HERE")
+        console.log(get_game_data_url + "?" + $.param(pp))
+        return get_game_data_url + "?" + $.param(pp);
+    }
+    self.get_game_data = function (id) {
+        $.getJSON(get_game_url(id), function (data) {
+            self.vue.game_data = data.game_data;
+            console.log(self.vue.game_data);
+        }) 
+        $("#vue-div").show();
+    };
+    
+    
 
 
     // Complete as needed.
@@ -43,15 +64,18 @@ var app = function() {
         data: {
             logged_in: false,
             game_list: [],
+            game_data: {},
         },
         methods: {
             get_games: self.get_games,
+            get_game_data: self.get_game_data,
         }
 
     });
 
     //Currently only gets November. Change values to get different months.
     self.get_games(11,2016);
+    self.get_game_data(19441)
     $("#vue-div").show();
     
     return self;

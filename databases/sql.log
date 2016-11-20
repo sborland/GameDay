@@ -73,3 +73,14 @@ CREATE TABLE post(
     updated_on TIMESTAMP
 );
 success!
+timestamp: 2016-11-19T16:34:37.917000
+CREATE TABLE web2py_session_GameDayCalendar(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    locked CHAR(1),
+    client_ip CHAR(64),
+    created_datetime TIMESTAMP,
+    modified_datetime TIMESTAMP,
+    unique_key CHAR(64),
+    session_data BLOB
+);
+success!

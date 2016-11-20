@@ -3,7 +3,8 @@
 {{block head}}
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
-    var get_games_url = "{{=URL('gamedata', 'get_games', user_signature=False)}}";
+    var get_games_list_url = "{{=URL('gamedata', 'get_games', user_signature=False)}}";
+    var get_game_data_url =  "{{=URL('gamedata', 'get_game_data', user_signature=False)}}";
     var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
     var del_post_url = "{{=URL('api', 'del_post', user_signature=True)}}";
 </script>
@@ -43,12 +44,96 @@
                     
                     </td>
                     <!---Note more_info is not yet implemented. It's only going to be used for testing.--->
-                    <td><i class="fa fa-gamepad" aria-hidden="true" v-on:click="more_info(game.id)"></i></td>
+                    <td> <button class="fa fa-gamepad" id="get_game_data_button"   v-on:click="get_game_data(game.id)" ></button></td>
                 </tr>
                 </tbody>
             </table>
-    </div>
-    </div>
+           </div>
+           
+  <h1>--------------------------------------------------------------------------------------------------------------</h1>
+    
+           <div class="game_table">
+            <table>
+                <tbody>
+                <tr>
+                    <td>Name</td>
+                    <td>${game_data.name}</td>
+                </tr>
+                <tr>
+                    <td>ID</td>
+                    <td>${game_data.id}</td>
+                </tr>
+                <tr>
+                    <td>Cover</td>
+                    <td>Regular: <img v-bind:src="game_data.coverReg">
+                    Thumb: <img v-bind:src="game_data.coverThumb"></td>
+                </tr>
+                <tr>
+                    <td>Storyline</td>
+                    <td>${game_data.storyline}</td>
+                </tr>
+                <tr>
+                    <td>Summary</td>
+                    <td>${game_data.summary}</td>
+                </tr>
+                <tr>
+                    <td>Publishers</td>
+                   <td><tr v-for="pub in game_data.publishers">
+                    <td></td>
+                    <td> ${pub} </td>
+                    </tr></td>
+                </tr>
+                <tr>
+                    <td>Developers</td>
+                    <td><tr v-for="dev in game_data.developers">
+                    <td></td>
+                    <td> ${dev} </td>
+                    </tr></td>
+                </tr>
+                <tr>
+                    <td>Themes</td>
+                    <td><tr v-for="theme in game_data.themes">
+                    <td></td>
+                    <td> ${theme} </td>
+                    </tr></td>
+                </tr>
+                <tr>
+                    <td>Player mode</td>
+                    <td><tr v-for="mode in game_data.gameModes">
+                    <td></td>
+                    <td> ${mode} </td>
+                    </tr></td>
+                </tr>
+                <tr>
+                    <td>Screenshots</td>
+                      <td><tr v-for="img in game_data.screenshots">
+                    <td></td>
+                    <td> <img v-bind:src="img.imgSmallURL"> <img v-bind:src="img.imgMediumURL"> <img v-bind:src="img.imgLargeURL"> </td>
+                    </tr></td>
+                </tr>
+                <tr>
+                    <td>Video</td>
+                      <td><tr v-for="vid in game_data.videos">
+                    <td></td>
+                    <td> Name: ${vid.vidName}  <embed v-bind:src="vid.vidURL"> </td>
+                    </tr></td>
+                </tr>
+                <tr>
+                    <td>Release&nbsp;</td>
+                    <td><tr v-for="releaseInfo in game_data.release">
+                    <td></td>
+                    <td>Platform: ${releaseInfo.platform}
+                    Region: ${releaseInfo.region}
+                    Date: ${releaseInfo.date}  </td>
+                    </tr></td>
+                </tr>
+                
+           </tbody>
+         </table>
+           
+        </div>
+    
+
 
 </div>
 
