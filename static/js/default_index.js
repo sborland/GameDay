@@ -73,8 +73,11 @@ var app = function() {
 
     });
 
-    //Currently only gets November. Change values to get different months.
-    self.get_games(11,2016);
+    //Starts on the current month
+    var d = new Date();
+    var m = d.getMonth();
+    var y = d.getFullYear();
+    self.get_games(m+1,y);
     self.get_game_data(19441)
     $("#vue-div").show();
     

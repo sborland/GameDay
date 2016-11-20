@@ -132,7 +132,7 @@ def get_gamesHelper(date1,date2):
 
     
 #gets a single game's data using it's ID
-#@cache(request.env.path_info,time_expire=30,cache_model=cache.ram)
+#@cache(request.env.path_info,time_expire=10,cache_model=cache.ram)
 def get_game_data():
     id = str(request.vars.id)
     
@@ -252,7 +252,7 @@ def get_game_data():
         
         
 #gets a developer/publisher name using id    
-#@cache(request.env.path_info,time_expire=30,cache_model=cache.ram)
+#@cache(request.env.path_info,time_expire=10,cache_model=cache.ram)
 def get_game_dataHelper(listIDs):
     sID = ""
     sIDlen = len(listIDs)
