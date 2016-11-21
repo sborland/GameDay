@@ -8,9 +8,64 @@
     var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
     var del_post_url = "{{=URL('api', 'del_post', user_signature=True)}}";
 </script>
+<link rel='stylesheet' href="{{=URL('static','css/fullcalendar.css')}}"/>
+<script src="{{=URL('static', 'js/jquery.min.js')}}"></script>
+<script src="{{=URL('static', 'js/moment.min.js')}}"></script>
+<script src="{{=URL('static', 'js/fullcalendar.js')}}"></script>
+
+
+<script>
+    $(document).ready(function() {
+
+    // page is now ready, initialize the calendar...
+
+    $('#calendar').fullCalendar({
+        // put your options and callbacks here
+    eventSources: [{
+        events: [
+            {
+                title: 'World of Spider',
+                id: '329',
+                start: '2016-11-20'
+
+            },
+            {
+                title: 'Edgy Game',
+                id: '666',
+                start: '2016-11-21'
+            },
+            {
+
+                title: 'Bad Game',
+                id: '100000000000000000000000000000',
+                start: '2016-11-26'
+            }
+        ],
+        color: 'black',     // an option!
+        textColor: 'yellow' // an option!
+    }],
+    eventClick: function(calEvent, jsEvent, view) {
+
+        alert('Event: ' + calEvent.title);
+        alert('Event: ' + calEvent.id);
+
+        // change the border color just for fun
+        $(this).css('border-color', 'red');
+
+    }
+    })
+
+});
+</script>
+
+
+
+
 {{end}}
 
 <div class="main_content">
+    <div id='calendar'>
+    </div>
 
     <div id="vue-div" class="display:none">
          <div class="result_table">
