@@ -168,7 +168,7 @@ def get_game_data():
     if (rep.status_code==200):
          res = rep.json()[0]
          
-         print res 
+         #print res 
          game_data["name"] = res['name'].encode("utf-8")
          game_data['id'] =res['id']
          
@@ -176,20 +176,20 @@ def get_game_data():
          if "summary" in res:
             game_data["summary"]= res["summary"].encode("utf-8")
          
-         print "summary"
+        # print "summary"
          
          
          if "storyline" in res:
             game_data["storyline"] = res["storyline"].encode("utf-8")
          
-         print "storyline"
+        # print "storyline"
          
          if "cover" in res:
             game_data['coverThumb'] = IBGDimages+SIZES['thumb']+"/"+res['cover']["cloudinary_id"]+".jpg"
             game_data['coverReg'] = IBGDimages+SIZES['small']+"/"+res['cover']["cloudinary_id"]+".jpg"
          
          
-         print "cover"
+        # print "cover"
          
          #gets publishers and developers for the game
          if "publishers" in res:
@@ -244,10 +244,8 @@ def get_game_data():
     else:
         responseStatus = "ERROR"
     
-    print game_data
-    return response.json(dict(
-        game_data=game_data,
-    ))
+    #print game_data
+    return response.json(dict(game_data=game_data))
         
         
         

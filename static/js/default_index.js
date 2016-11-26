@@ -41,7 +41,6 @@ var app = function() {
         var pp = {
             id: id
         };
-        console.log("HERE")
         console.log(get_game_data_url + "?" + $.param(pp))
         return get_game_data_url + "?" + $.param(pp);
     }
@@ -54,9 +53,22 @@ var app = function() {
     };
     
     
+    //gets gaming news from Reddit
+    self.get_gaming_news = function () {
+        console.log("HERE");
+        $.getJSON(get_gaming_news_url, function (data) {
+            self.vue.gaming_news = data.listofNews;
+            self.vue.gaming_news_response = data.responseStatus;
+            console.log(self.vue.gamingNewsResponse);
+            console.log("done");
+        }) 
+
+    };
+    
+    
 
 
-    // Complete as needed.
+    //Vue stuff
     self.vue = new Vue({
         el: "#vue-div",
         delimiters: ['${', '}'],
@@ -65,10 +77,13 @@ var app = function() {
             logged_in: false,
             game_list: [],
             game_data: {},
+            gaming_news: [],
+            gaming_news_response: 'error',
         },
         methods: {
             get_games: self.get_games,
             get_game_data: self.get_game_data,
+            get_gaming_news: self.get_gaming_news,
         }
 
     });
@@ -77,8 +92,10 @@ var app = function() {
     var d = new Date();
     var m = d.getMonth();
     var y = d.getFullYear();
+    self.get_gaming_news();
     self.get_games(m+1,y);
-    self.get_game_data(19441)
+    self.get_game_data(19441);
+    
     $("#vue-div").show();
     
     return self;
