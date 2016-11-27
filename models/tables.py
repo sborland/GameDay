@@ -16,6 +16,17 @@ db.define_table('post',
                 Field('created_on', 'datetime', default=datetime.datetime.utcnow()),
                 Field('updated_on', 'datetime', update=datetime.datetime.utcnow()),
                 )
+                
+db.define_table('user_games_list',
+    Field('user_id', default=auth.user.email if auth.user_id else None),
+    Field('games_list_json', 'text'), # user's personal list of games, in json form (list of game IDs)
+)
+
+db.define_table('games',
+    Field('game_id'), #used to differentiate row for games 
+    Field('game_likes_json', 'text'), # list of users that "liked" the game
+    Field('game_postings',db.post),
+)
 
 # I don't want to display the user email by default in all forms.
 db.post.user_email.readable = db.post.user_email.writable = False

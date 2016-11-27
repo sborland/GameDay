@@ -53,14 +53,79 @@ var app = function() {
     };
     
     
+    
+    //Given game id and other info, adds game to user list 
+    function add_game_list_url(id,name,thumb) {
+        console.log(id);
+        var pp = {
+            id: id,
+            name: name,
+            thumb: thumb
+        };
+        console.log(add_game_to_userlist_url + "?" + $.param(pp))
+        return add_game_to_userlist_url + "?" + $.param(pp);
+    }
+    self.add_game_list = function (id,name,thumb) {
+        $.getJSON(add_game_list_url(id,name,thumb), function (data) {
+            self.vue.game_data['game_in_list'] = 'minus';
+            self.vue.$set(self.vue,'user_game_list',data.game_list);
+            self.vue.$set(self.vue,'user_game_list_size',data.game_list.length);
+            //self.vue.user_game_list_size = self.vue.user_game_list_size+1;
+            //self.vue.user_game_list = data.game_list;
+           // console.log(self.vue.user_game_list);
+        }) 
+       
+        //self.get_user_game_list();
+        //self.get_game_data(id);
+    };
+    
+    
+    //Given game id, removes game from user's list 
+    function rem_game_list_url(id) {
+        console.log(id);
+        var pp = {
+            id: id
+        };
+        console.log(rem_game_from_userlist_url + "?" + $.param(pp))
+        return rem_game_from_userlist_url + "?" + $.param(pp);
+    }
+    self.rem_game_list = function (id) {
+        $.getJSON(rem_game_list_url(id), function (data) {
+            self.vue.game_data['game_in_list'] = 'plus';
+            self.vue.$set(self.vue,'user_game_list',data.game_list);
+            self.vue.$set(self.vue,'user_game_list_size',data.game_list.length);
+            //self.vue.user_game_list_size = self.vue.user_game_list_size-1;
+            //console.log(self.vue.user_game_list);
+        })
+
+        //self.get_user_game_list();
+        //self.get_game_data(id);
+       
+    };
+    
+    self.get_user_game_list = function () {
+        
+        $.getJSON(get_games_from_userlist_url, function (data) {
+           // self.vue.user_game_list = data.game_list;
+          //  self.vue.user_game_list_size = self.vue.user_game_list.length;
+            self.vue.user_id=data.user_id;
+           // console.log(self.vue.user_game_list_size);
+          //  console.log(self.vue.user_game_list);
+            self.vue.$set(self.vue,'user_game_list',data.game_list);
+            self.vue.$set(self.vue,'user_game_list_size',data.game_list.length);
+
+        })
+       
+        console.log("MADE IT");
+        $("#vue-div").show();
+    };
+    
+    
     //gets gaming news from Reddit
     self.get_gaming_news = function () {
-        console.log("HERE");
         $.getJSON(get_gaming_news_url, function (data) {
             self.vue.gaming_news = data.listofNews;
             self.vue.gaming_news_response = data.responseStatus;
-            console.log(self.vue.gamingNewsResponse);
-            console.log("done");
         }) 
 
     };
@@ -79,11 +144,17 @@ var app = function() {
             game_data: {},
             gaming_news: [],
             gaming_news_response: 'error',
+            user_id: 'null',
+            user_game_list: [],
+            user_game_list_size:0,
         },
         methods: {
             get_games: self.get_games,
             get_game_data: self.get_game_data,
             get_gaming_news: self.get_gaming_news,
+            add_game_list: self.add_game_list,
+            rem_game_list: self.rem_game_list,
+            get_user_game_list: self.get_user_game_list
         }
 
     });
@@ -92,10 +163,12 @@ var app = function() {
     var d = new Date();
     var m = d.getMonth();
     var y = d.getFullYear();
+    console.log(y);
     self.get_gaming_news();
-    self.get_games(m+1,y);
-    self.get_game_data(19441);
     
+    self.get_games(m+1,y);
+    self.get_user_game_list();
+    self.get_gaming_news();
     $("#vue-div").show();
     
     return self;

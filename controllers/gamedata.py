@@ -18,7 +18,7 @@ SIZES ={
 IBGDvideo = "https://www.youtube.com/embed/"
 
 import requests
-import time, datetime
+import time, datetime,json
 
 #GLOBAL VARIABLES DON'T TOUCH#
 MONTHS = {'01' : "January",'02' : "February",'03' : "March",'04' : "April",'06' : "May",'07' : "June",'08' : "July",'09' : "August",'10' : "September",'11' : "November",'12' : "December",
@@ -40,9 +40,10 @@ GAMEMODES ={ "1":"Single Player", "2":"Multiplayer", "3":"Co-operative", "4":"Sp
 #Grabs the games that come out that month and year
 #Month is a value from 01 to 12 (MUST INCLUDE THE 0 for single digits)
 #Year is any valid year value
-@cache(request.env.path_info,time_expire=30,cache_model=cache.disk)
+@cache(request.env.path_info,time_expire=15,cache_model=cache.disk)
 def get_games():
     month = int(request.vars.month)
+    print request.vars.year
     year = int(request.vars.year)
 
     #handles Dec-Jan case where
@@ -79,16 +80,45 @@ def get_games():
     
     requestStatus = "OK"
     
+    #Pulling current user's email so we can pull their list of games
+    #Empty list if the user is not logged in
+    logged_in = auth.user_id is not None
+    user_games_dict = None
+    if logged_in: 
+        curuser_email = db(db.auth_user.id==auth.user_id).select().first().email
+        user_games_pull = db(db.user_games_list.user_id==curuser_email).select().first()
+        #If new user, create a record for them in the table...
+        if user_games_pull==None:
+            db.user_games_list.insert(user_id = curuser_email,games_list_json = {},)
+        else: #else set their record as the list of games to check
+            user_games_dict =user_games_pull['games_list_json']
+    else:
+        curuser_email = None
+
+   
+    print curuser_email
     #TODO: Throwing an error for a bad status code
     if((resWeekA.status_code==200) and (resWeekB.status_code==200) and (resWeekC.status_code==200)):
         #go through each week...
         for week in gameMonth:
             weekResponse = week.json()
             for gameData in weekResponse:
-                #get the game's name and id
+                #get the game's name/id 
+                #and check if it's in the user's list. If it is,
+                #set user_game attr to 'minus', else set it to 'plus'.
+                #if not logged in, set it to 'null'
+                if curuser_email is not None:
+                    game_in_user_list='plus'
+                    if user_games_dict is not None:
+                        if str(gameData['id']) in user_games_dict:
+                            game_in_user_list = 'minus'
+                else:
+                    game_in_user_list = 'null'
+                
                 game = dict(
                     name = gameData['name'].encode("utf-8"),
                     id = gameData['id'],
+                    game_in_list = game_in_user_list,
                     release = []
                 )
                 #the game's release date is divided up by information on
@@ -145,6 +175,22 @@ def get_game_data():
     
     responseStatus = "OK"
     
+    logged_in = auth.user_id is not None
+    user_games_dict = None
+    if logged_in: 
+        curuser_email = db(db.auth_user.id==auth.user_id).select().first().email
+        user_games_pull = db(db.user_games_list.user_id==curuser_email).select().first()
+        #If new user, create a record for them in the table...
+        if user_games_pull==None:
+            db.user_games_list.insert(user_id = curuser_email,games_list_json = {},)
+            
+        else: #else set their record as the list of games to check
+            user_games_dict =user_games_pull['games_list_json']
+    else:
+        curuser_email = None
+    
+
+    
      #returning a dictionary representation of
      #the game's data.
     game_data = dict(
@@ -159,29 +205,39 @@ def get_game_data():
             release = [],
             themes =[],
             gameModes = [],
+            game_in_list = 'null',
             #TODO: replace temp cover not found image
             coverThumb = "https://www.naplesgarden.org/wp-content/themes/naples_botanical/img/notfound.jpg",
             coverReg = "https://www.naplesgarden.org/wp-content/themes/naples_botanical/img/notfound.jpg"
          ) 
     print rep.status_code
  
+ 
     if (rep.status_code==200):
+        
+         
+    
          res = rep.json()[0]
          
-         #print res 
+
          game_data["name"] = res['name'].encode("utf-8")
-         game_data['id'] =res['id']
+         game_data['id'] =res['id'] 
+
          
+         if curuser_email is not None:
+            game_data['game_in_list']='plus'
+            if user_games_dict is not None:
+                if str(res['id']) in user_games_dict:
+                    game_data['game_in_list'] = 'minus'
          
          if "summary" in res:
             game_data["summary"]= res["summary"].encode("utf-8")
          
         # print "summary"
-         
-         
+        
          if "storyline" in res:
             game_data["storyline"] = res["storyline"].encode("utf-8")
-         
+
         # print "storyline"
          
          if "cover" in res:
@@ -277,8 +333,73 @@ def get_game_dataHelper(listIDs):
         return None
 
 
+#Database user's game list functions
 
+#given an id, adds a game to user's list
+def add_game_to_userlist():
+    print request.vars.id
+    game_id=request.vars.id
+    game_name=request.vars.name
+    game_thumbnail=request.vars.thumb
+    #grabs user's email, the user's game list and database entry
+    curuser_email = db(db.auth_user.id==auth.user_id).select().first().email
+    user_games_dict = json.loads(db(db.user_games_list.user_id==curuser_email).select().first().games_list_json)
+    game_list_entry = db(db.user_games_list.user_id==curuser_email).select().first()
+    #creates dictionary for game info and adds game to user's list and updates database entry
+    #game_list_json -> key: game_id | value: {name, thumbnail}
+    add_game_dict = { 'name':game_name, 'thumbnail':game_thumbnail }
+    user_games_dict[game_id] = add_game_dict
+    game_list_entry.games_list_json = json.dumps(user_games_dict)
+    game_list_entry.update_record()
+    
+    game_list = user_games_list_helper(user_games_dict)
+    return response.json(dict(game_list=game_list,user_id=curuser_email))
+    
+#given an id, removes a game from user's list  
+def rem_game_from_userlist():
+    print request.vars.id
+    game_id=request.vars.id
+    #grabs user's email, the user's game list and database entry
+    curuser_email = db(db.auth_user.id==auth.user_id).select().first().email
+    user_games_dict = json.loads(db(db.user_games_list.user_id==curuser_email).select().first().games_list_json)
+    game_list_entry = db(db.user_games_list.user_id==curuser_email).select().first()
+    #delete's game from user's list and updates database entry
+    del user_games_dict[game_id]
+    game_list_entry.games_list_json = json.dumps(user_games_dict)
+    game_list_entry.update_record()
+    
+    game_list = user_games_list_helper(user_games_dict)
+    return response.json(dict(game_list=game_list,user_id=curuser_email))
 
+#returns a list of the user's games
+def get_games_from_userlist():
+    logged_in = auth.user_id is not None
+    user_games_dict = {}
+    curuser_email = 'null'
+    if logged_in: 
+        curuser_email = db(db.auth_user.id==auth.user_id).select().first().email
+        user_games_pull = json.loads(db(db.user_games_list.user_id==curuser_email).select().first().games_list_json)
+        #If new user, create a record for them in the table...
+        if user_games_pull==None:
+            db.user_games_list.insert(user_id = curuser_email,games_list_json = {},)
+        else: #else set their record as the list of games
+            user_games_dict =user_games_pull
+    
+    game_list = user_games_list_helper(user_games_dict)
+    return response.json(dict(game_list=game_list,user_id=curuser_email))
+
+def user_games_list_helper(user_games_dict):
+    #not the most optimal solution, but works for now.
+    game_list = []
+    
+    for key in user_games_dict.keys():
+        data = {}
+        data['thumb']=user_games_dict[key]['thumbnail']
+        data['name']=user_games_dict[key]['name']
+        data['id']=key
+        game_list.append(data)
+    game_list = sorted(game_list, key = lambda k: k['name'])
+    return game_list
 
     
     

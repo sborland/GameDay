@@ -6,7 +6,9 @@
     var get_games_list_url = "{{=URL('gamedata', 'get_games', user_signature=False)}}";
     var get_game_data_url =  "{{=URL('gamedata', 'get_game_data', user_signature=False)}}";
     var get_gaming_news_url = "{{=URL('redditdata', 'get_gaming_news', user_signature=False)}}";
-
+    var get_games_from_userlist_url = "{{=URL('gamedata', 'get_games_from_userlist', user_signature=False)}}";
+    var add_game_to_userlist_url = "{{=URL('gamedata', 'add_game_to_userlist', user_signature=False)}}";
+    var rem_game_from_userlist_url = "{{=URL('gamedata', 'rem_game_from_userlist', user_signature=False)}}";
 </script>
 <link rel='stylesheet' href="{{=URL('static','css/fullcalendar.css')}}"/>
 <script src="{{=URL('static', 'js/jquery.min.js')}}"></script>
@@ -64,20 +66,51 @@
 {{end}}
     
      
-    <div id="vue-div" class="display:none">
-<div class="container">
-        <div id = "calendar" class="col-md-9">
+<div id="vue-div" class="display:none">
+    <div class="container">
+        <div id = "calendar" class="col-md-6">
              This is where the calendar is going to be
         </div>
-        <div id = "user list" class="col-md-3">
-             This is where the user's list
+        <div id = "user list" class="col-md-6">
+           <div class="title"><h2>Personal Gaming List</h2></div>
+             <div v-if="user_id=='null'" >
+                Please log in to see your personal list of games :)
+             </div>
+             <div v-else>
+                <div v-if="user_game_list_size==0">
+                    Looks like you haven't saved any games! When you save games, it'll be displayed here!
+                </div>
+                <div v-if="user_game_list_size>0">
+                    <div v-for="game in user_game_list" class="container">
+                        <div class="col-md-2 game_thumb">
+                            <img v-bind:src="game.thumb" width="50%" class="preview_image"/>
+                        </div>
+                        <div class="col-md-9 game_title ">
+                            <button class="fa fa-gamepad" id="get_game_data_button" v-on:click="get_game_data(game.id)" ></button>
+                             ${game.name}
+                        </div>   
+                    </div>
+                </div>
+                <div v-if="user_game_list_size<0">
+                    <div v-for="game in user_game_list" class="container">
+                        <div class="col-md-2 game_thumb">
+                            <img v-bind:src="game.thumb" width="50%" class="preview_image"/>
+                        </div>
+                        <div class="col-md-9 game_title ">
+                            <button class="fa fa-gamepad" id="get_game_data_button" v-on:click="get_game_data(game.id)" ></button>
+                             ${game.name}
+                        </div>   
+                    </div>
+                </div>
+                
+              </div>
+                
+           
          </div>
      </div>
      <div class="title"><h2>Daily Gaming News</h2></div>
      <div id = "Gaming News" class="gaming news">
-        
         <span v-if="gaming_news_response=='ok'" >
-  
             <div v-for="story in gaming_news" class="container">
                 <div class="col-md-2 news_image">
                     <img v-bind:src="story.preview" width="50%" class="preview_image"/>
@@ -85,9 +118,7 @@
                 <div class="col-md-10 news_title ">
                   <h3>  <a v-bind:href="story.url" target="_blank">${story.title}</a> </h3>
                 </div>
-               
             </div>
-            
             <!--------Another way to display---------
              <div class="col-md-1 news_image">
                 <img v-bind:src="gaming_news[0].preview" width="100%" class="preview_image"/>
@@ -155,9 +186,15 @@
             </table>
                     
                     </td>
-                    <!---Note more_info is not yet implemented. It's only going to be used for testing.--->
+                    
                     <td> <button class="fa fa-gamepad" id="get_game_data_button"   v-on:click="get_game_data(game.id)" ></button></td>
-                </tr>
+                    <!---Debugging. probably can use to check whether or not the game is in the list from the monthly schedule
+                    <div class="user-game-list container">
+                    <td v-if="game.game_in_list=='plus'"> <button class="fa fa-plus-circle" id="add_game_to_list"  ></button></td>
+                    <td v-if="game.game_in_list=='minus'"> <button class="fa fa-minus-circle" id="remove_game_from_list"    ></button></td>
+                    
+                    </div> --->
+               </tr>
                 </tbody>
             </table>
            </div>
@@ -239,6 +276,13 @@
                     Date: ${releaseInfo.date}  </td>
                     </tr></td>
                 </tr>
+                <tr>
+                 <div class="user-game-list container">
+                    <td v-if="game_data.game_in_list=='plus'"> <button class="fa fa-plus-circle" id="add_game_to_list_button"   v-on:click="add_game_list(game_data.id,game_data.name,game_data.coverThumb)" ></button></td>
+                    <td v-if="game_data.game_in_list=='minus'"> <button class="fa fa-minus-circle" id="remove_game_from_list_button"   v-on:click="rem_game_list(game_data.id)" ></button></td>
+                    
+              </div>
+              </tr>
                 
            </tbody>
          </table>
