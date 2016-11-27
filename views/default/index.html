@@ -277,6 +277,11 @@
                     </tr></td>
                 </tr>
                 <tr>
+                    <td>How many people have added this game to their list:</td>
+                    <td v-if="game_data.game_likes != 1">${game_data.game_likes} people have this game in their list! <div v-if="game_data.game_in_list=='minus'"> (Including you!)</div></td>
+                    <td v-if="game_data.game_likes == 1">${game_data.game_likes} person has this game in their list! <div v-if="game_data.game_in_list=='minus'"> (That's you!)</div></td>
+                </tr>
+                <tr>
                  <div class="user-game-list container">
                     <td v-if="game_data.game_in_list=='plus'"> <button class="fa fa-plus-circle" id="add_game_to_list_button"   v-on:click="add_game_list(game_data.id,game_data.name,game_data.coverThumb)" ></button></td>
                     <td v-if="game_data.game_in_list=='minus'"> <button class="fa fa-minus-circle" id="remove_game_from_list_button"   v-on:click="rem_game_list(game_data.id)" ></button></td>

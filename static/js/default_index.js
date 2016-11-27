@@ -68,6 +68,7 @@ var app = function() {
     self.add_game_list = function (id,name,thumb) {
         $.getJSON(add_game_list_url(id,name,thumb), function (data) {
             self.vue.game_data['game_in_list'] = 'minus';
+            self.vue.game_data['game_likes'] = data.game_likes;
             self.vue.$set(self.vue,'user_game_list',data.game_list);
             self.vue.$set(self.vue,'user_game_list_size',data.game_list.length);
             //self.vue.user_game_list_size = self.vue.user_game_list_size+1;
@@ -90,10 +91,14 @@ var app = function() {
         return rem_game_from_userlist_url + "?" + $.param(pp);
     }
     self.rem_game_list = function (id) {
+
         $.getJSON(rem_game_list_url(id), function (data) {
             self.vue.game_data['game_in_list'] = 'plus';
+            self.vue.game_data['game_likes'] = data.game_likes;
+            console.log(data.game_likes)
             self.vue.$set(self.vue,'user_game_list',data.game_list);
             self.vue.$set(self.vue,'user_game_list_size',data.game_list.length);
+
             //self.vue.user_game_list_size = self.vue.user_game_list_size-1;
             //console.log(self.vue.user_game_list);
         })
@@ -163,12 +168,9 @@ var app = function() {
     var d = new Date();
     var m = d.getMonth();
     var y = d.getFullYear();
-    console.log(y);
-    self.get_gaming_news();
-    
     self.get_games(m+1,y);
-    self.get_user_game_list();
     self.get_gaming_news();
+    self.get_user_game_list();
     $("#vue-div").show();
     
     return self;

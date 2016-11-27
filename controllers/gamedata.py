@@ -175,6 +175,8 @@ def get_game_data():
     
     responseStatus = "OK"
     
+    
+    #pulls user's list of games
     logged_in = auth.user_id is not None
     user_games_dict = None
     if logged_in: 
@@ -189,7 +191,7 @@ def get_game_data():
     else:
         curuser_email = None
     
-
+   
     
      #returning a dictionary representation of
      #the game's data.
@@ -215,37 +217,41 @@ def get_game_data():
  
     if (rep.status_code==200):
         
-         
-    
          res = rep.json()[0]
          
-
          game_data["name"] = res['name'].encode("utf-8")
          game_data['id'] =res['id'] 
-
-         
+         print "LOOOOOOOOOK AT ME"
+         print game_data['id'] 
+         #checks whether the game is in the user's list or not
          if curuser_email is not None:
             game_data['game_in_list']='plus'
             if user_games_dict is not None:
                 if str(res['id']) in user_games_dict:
                     game_data['game_in_list'] = 'minus'
          
+         #pulls game's list of likes/game postings
+         game_db_pull = db(db.games.game_id==game_data['id']).select().first()
+         game_likes = []
+         #game_postings = []
+            #If game is newly selected, create a record for them in the game table...
+         if game_db_pull==None:
+              db.games.insert(game_id = game_data['id'],game_likes_json = [],game_postings_json=[])
+            
+         else: #else pull the list of games and postings
+              game_likes = game_db_pull['game_likes_json']
+                #game_postings = game_db_pull['game_postings_json']
+         game_data['game_likes']= len(game_likes)
+         
+         
          if "summary" in res:
             game_data["summary"]= res["summary"].encode("utf-8")
-         
-        # print "summary"
         
          if "storyline" in res:
             game_data["storyline"] = res["storyline"].encode("utf-8")
-
-        # print "storyline"
-         
          if "cover" in res:
             game_data['coverThumb'] = IBGDimages+SIZES['thumb']+"/"+res['cover']["cloudinary_id"]+".jpg"
             game_data['coverReg'] = IBGDimages+SIZES['small']+"/"+res['cover']["cloudinary_id"]+".jpg"
-         
-         
-        # print "cover"
          
          #gets publishers and developers for the game
          if "publishers" in res:
@@ -299,7 +305,7 @@ def get_game_data():
             
     else:
         responseStatus = "ERROR"
-    
+
     #print game_data
     return response.json(dict(game_data=game_data))
         
@@ -333,7 +339,8 @@ def get_game_dataHelper(listIDs):
         return None
 
 
-#Database user's game list functions
+#################Database user's game list functions###############################################
+
 
 #given an id, adds a game to user's list
 def add_game_to_userlist():
@@ -344,17 +351,29 @@ def add_game_to_userlist():
     #grabs user's email, the user's game list and database entry
     curuser_email = db(db.auth_user.id==auth.user_id).select().first().email
     user_games_dict = json.loads(db(db.user_games_list.user_id==curuser_email).select().first().games_list_json)
-    game_list_entry = db(db.user_games_list.user_id==curuser_email).select().first()
-    #creates dictionary for game info and adds game to user's list and updates database entry
+    game_userlist_entry = db(db.user_games_list.user_id==curuser_email).select().first()
+
+   #creates dictionary for game info and adds game to user's list and updates database entry
     #game_list_json -> key: game_id | value: {name, thumbnail}
     add_game_dict = { 'name':game_name, 'thumbnail':game_thumbnail }
     user_games_dict[game_id] = add_game_dict
-    game_list_entry.games_list_json = json.dumps(user_games_dict)
-    game_list_entry.update_record()
+    game_userlist_entry.games_list_json = json.dumps(user_games_dict)
+    game_userlist_entry.update_record()
+    
+    #Gets the game's list of users that added the game to their list.
+    #appends the user's email to the list and returns 
+    game_likes = db(db.games.game_id==game_id).select().first().game_likes_json
+    game_db_entry = db(db.games.game_id==game_id).select().first()
+    game_likes.append(curuser_email)
+    game_db_entry.game_likes_json = game_likes
+    game_db_entry.update_record()
+    like_count = len(game_likes)
+    
     
     game_list = user_games_list_helper(user_games_dict)
-    return response.json(dict(game_list=game_list,user_id=curuser_email))
-    
+    return response.json(dict(game_list=game_list,user_id=curuser_email,game_likes=like_count))
+ 
+
 #given an id, removes a game from user's list  
 def rem_game_from_userlist():
     print request.vars.id
@@ -363,13 +382,25 @@ def rem_game_from_userlist():
     curuser_email = db(db.auth_user.id==auth.user_id).select().first().email
     user_games_dict = json.loads(db(db.user_games_list.user_id==curuser_email).select().first().games_list_json)
     game_list_entry = db(db.user_games_list.user_id==curuser_email).select().first()
+
     #delete's game from user's list and updates database entry
     del user_games_dict[game_id]
     game_list_entry.games_list_json = json.dumps(user_games_dict)
     game_list_entry.update_record()
     
+    #Gets the game's list of users that added the game to their list.
+    #remove user's email from the game's list
+    game_likes = db(db.games.game_id==game_id).select().first().game_likes_json
+    game_db_entry = db(db.games.game_id==game_id).select().first()
+    game_likes.remove(curuser_email)
+    game_db_entry.game_likes_json = game_likes
+    game_db_entry.update_record()
+    like_count = len(game_likes)
+    
+    
     game_list = user_games_list_helper(user_games_dict)
-    return response.json(dict(game_list=game_list,user_id=curuser_email))
+    return response.json(dict(game_list=game_list,user_id=curuser_email,game_likes=like_count))
+
 
 #returns a list of the user's games
 def get_games_from_userlist():
@@ -378,12 +409,12 @@ def get_games_from_userlist():
     curuser_email = 'null'
     if logged_in: 
         curuser_email = db(db.auth_user.id==auth.user_id).select().first().email
-        user_games_pull = json.loads(db(db.user_games_list.user_id==curuser_email).select().first().games_list_json)
+        user_games_pull = db(db.user_games_list.user_id==curuser_email).select().first()
         #If new user, create a record for them in the table...
         if user_games_pull==None:
             db.user_games_list.insert(user_id = curuser_email,games_list_json = {},)
         else: #else set their record as the list of games
-            user_games_dict =user_games_pull
+            user_games_dict =  json.loads(db(db.user_games_list.user_id==curuser_email).select().first().games_list_json)
     
     game_list = user_games_list_helper(user_games_dict)
     return response.json(dict(game_list=game_list,user_id=curuser_email))
@@ -395,10 +426,10 @@ def user_games_list_helper(user_games_dict):
     for key in user_games_dict.keys():
         data = {}
         data['thumb']=user_games_dict[key]['thumbnail']
-        data['name']=user_games_dict[key]['name']
+        data['name']=(user_games_dict[key]['name'])
         data['id']=key
         game_list.append(data)
-    game_list = sorted(game_list, key = lambda k: k['name'])
+    #game_list = sorted(game_list, key = lambda k: k['name'])
     return game_list
 
     
