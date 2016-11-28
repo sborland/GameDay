@@ -23,6 +23,12 @@ db.define_table('user_games_list',
     Field('games_list_json', 'text'), # user's personal list of games, in json form (list of game IDs)
 )
 
+db.define_table('user_messages',
+    Field('user_email', default=auth.user.email if auth.user_id else None),
+    Field('friend_email'),
+    Field('message_json', 'json'), # user's personal list of messages
+)
+
 db.define_table('games',
     Field('game_id'), #used to differentiate row for games 
     Field('game_likes_json', 'json'), # list of users that "liked" the game

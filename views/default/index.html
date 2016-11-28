@@ -6,19 +6,25 @@
     var get_games_list_url = "{{=URL('gamedata', 'get_games', user_signature=False)}}";
     var get_game_data_url =  "{{=URL('gamedata', 'get_game_data', user_signature=False)}}";
     var get_gaming_news_url = "{{=URL('redditdata', 'get_gaming_news', user_signature=False)}}";
+    //user's list stuff
     var get_games_from_userlist_url = "{{=URL('gamedata', 'get_games_from_userlist', user_signature=False)}}";
     var add_game_to_userlist_url = "{{=URL('gamedata', 'add_game_to_userlist', user_signature=False)}}";
     var rem_game_from_userlist_url = "{{=URL('gamedata', 'rem_game_from_userlist', user_signature=False)}}";
+    //each game's personal postings
     var get_game_posts_url = "{{=URL('gamedata', 'get_game_postings', user_signature=False)}}";
     var add_game_post_url = "{{=URL('gamedata', 'add_game_postings', user_signature=False)}}";
     var rem_game_post_url = "{{=URL('gamedata', 'rem_game_postings', user_signature=False)}}";
+    //user's messaging system
+    var get_chat_friends_url = "{{=URL('messagedata', 'get_chat_friends', user_signature=False)}}";
+    var get_chat_posts_url = "{{=URL('messagedata', 'get_chat_posts', user_signature=False)}}";
+    var add_chat_post_url = "{{=URL('messagedata', 'add_chat_post', user_signature=False)}}";
 </script>
 <link rel='stylesheet' href="{{=URL('static','css/fullcalendar.css')}}"/>
 <script src="{{=URL('static', 'js/jquery.min.js')}}"></script>
 <script src="{{=URL('static', 'js/moment.min.js')}}"></script>
 <script src="{{=URL('static', 'js/fullcalendar.js')}}"></script>
 
-
+<!----------
 <script>
     $(document).ready(function() {
 
@@ -63,34 +69,107 @@
 });
 </script>
 
-
+--->
 
 
 {{end}}
     
      
 <div id="vue-div" class="display:none">
-    <div class="container">
-        <div id = "calendar" class="col-md-6">
-             This is where the calendar is going to be
+    <div v-if="page=='calendar'" class="container" id="calendar page" style="height:400px;">
+        <div id = "calendar" class="col-md-8">
+             <div class="title"><h2>Game Calendar</h2></div>
         </div>
-        <div id = "user list" class="col-md-6">
+        <div id = "user list" class="col-md-4">
            <div class="title"><h2>Personal Gaming List</h2></div>
              <div v-if="user_id=='null'" >
                 Please log in to see your personal list of games :)
              </div>
              <div v-else>
+                <button class="btn orange" v-on:click="goto('messages')"> <i class="fa fa-envelope-o"></i> Messages </button>
                 <div v-if="user_game_list_size==0">
                     Looks like you haven't saved any games! When you save games, it'll be displayed here!
                 </div>
                 <div v-if="user_game_list_size>0" style="height:400px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
                     <div v-for="game in user_game_list" class="container" >
-                        <div class="col-md-2 game_thumb">
-                            <img v-bind:src="game.thumb" width="50%" class="preview_image"/>
+                        <div class="col-md-1 game_thumb">
+                            <img v-bind:src="game.thumb" width="100%" class="preview_image"/>
                         </div>
-                        <div class="col-md-9 game_title ">
+                        <div class="col-md-6 game_title ">
                             <button class="fa fa-gamepad" id="get_game_data_button" v-on:click="get_game_data(game.id)" ></button>
                              ${game.name}
+                        </div>   
+                    </div>
+                </div>
+              </div>
+         </div>
+     </div>
+     <div v-if="page=='messages'" class="container" id="messages page" style="height:400px;">
+        <div id = "list of messages" class="col-md-8" >
+            <div v-if="user_id=='null'" >
+                Please log in to see your personal messages
+             </div>
+             <div v-if="friend_name!=''" >
+                <div class="title"><h2>Messaging with ${friend_name}</h2></div>
+                 <div id="new message section">
+                      <form action="#" v-on:submit.prevent="add_chat_post()" class="form-horizontal" enctype="multipart/form-data" method="post">
+                            <div class="form-group" id="no_table_post_content">
+                                <div>
+                                    <input class="form-control string" id="no_table_post_content" v-model="form_post_content"  type="text" />
+                                    <span class="help-block"></span>
+                                </div>
+                            </div>
+                            <div class="new-post-button" id="submit_record__row">
+                                <div>
+                                    <input class="btn btn-primary" class="post-button" id="add_post_submit" type="submit" value="Post" />
+                                    <input class="btn btn-warning" class="cancel-button" id="cancel_edit_submit"  type="reset" value="Clear" />
+                                </div>
+                            </div>
+                       </form>
+                    </div>
+                     <div class="post_content">
+                        <div v-if="friend_chat_list!=0" style="height:320px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
+                            <div class ="post" v-for="post in friend_chat_list">
+                                ${post.post_content}
+                                <div style="color:#0099ff">  
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                            <td v-if="post.belongs_to_user==false" style="width:300px; text-align:left"> ${post.post_name}</td>
+                                            <td v-if="post.belongs_to_user==true" style="width:300px; text-align:left"> You </td>
+                                            <td style="width:300px" >Sent on ${post.created_on}</td>
+                                            <!--<td v-if="post.belongs_to_user==true"><button class="fa fa-trash-o" v-on:click="rem_game_post(post.id,game_data.id)"></button></td>-->
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                          </div>
+                          <div v-if="friend_chat_list==0">
+                            No messages found. Post a message above to get the ball rolling!
+                          </div>
+                    </div>
+                   </div>
+             <div v-if="friend_name==''" >
+                <div class="title"><h2>Game Day Messages </h2></div>
+                Select a friend to start sending messages.
+             </div>
+        </div>
+        <div id = "switch between messages" class="col-md-4">
+           <div class="title"><h2>Message List</h2></div>
+             <div v-if="user_id=='null'" style="height:400px;">
+                Please log in to see your personal list of messages
+             </div>
+             <div v-else>
+                <button class="btn orange" v-on:click="goto('calendar')"> <i class="fa fa-calendar"></i> Calendar </button>
+                <div v-if="friend_email_list.length==0">
+                   Looks like you don't have any ongoing messages (yet)! Start up a chat with someone on a game's page!
+                </div>
+                <div v-if="friend_email_list.length>0" style="height:400px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
+                    <div v-for="email in friend_email_list" class="container" >
+                        <div class="col-md-8 friend_list ">
+                            <button class="fa fa-envelope"  id="get_chat_button" v-on:click="get_chat(email.email)" > </button> ${email.name}
+                             
                         </div>   
                     </div>
                 </div>
@@ -298,7 +377,8 @@
            </form>
         </div>
          <div class="post_content">
-            <div class ="post" v-for="post in game_posts">
+            <div v-if="game_posts.length!=0">
+                <div class ="post" v-for="post in game_posts">
                     ${post.post_content}
                     <div style="color:#0099ff">  
                         <table>
@@ -307,10 +387,17 @@
                                 <td style="width:300px; text-align:left">Posted by ${post.post_name}</td>
                                 <td style="width:300px" >Created on ${post.created_on}</td>
                                 <td v-if="post.belongs_to_user==true"><button class="fa fa-trash-o" v-on:click="rem_game_post(post.id,game_data.id)"></button></td>
+                                <div v-if="user_id!='null'">
+                                    <td v-if="post.belongs_to_user==false"><button class="fa fa-envelope" v-on:click="start_chat(post.user_email)">Message ${post.post_name}</button></td>
+                                </div>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+                </div>
+              </div>
+              <div v-if="game_posts.length==0">
+                    No posts have been posted on this game.
               </div>
             <div v-if="more_post" class="go forward posts">
                 <button class="fa fa-arrow-left" v-on:click="get_game_posts(index_post,'more',game_data.id)">Go to Older Posts</button>

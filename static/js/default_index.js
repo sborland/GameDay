@@ -13,7 +13,7 @@ var app = function() {
         }
     };
     
-    
+    //-------------------Calendar functions-------------//
      //Gets the game that is coming out that month
     //month is a value between 01 to 12 (MUST INCLUDE THE 0 for the single digits)
     //year is any valid year value
@@ -55,7 +55,7 @@ var app = function() {
     };
     
     
-    
+    //-----------User's Personal Game List-----------///
     //Given game id and other info, adds game to user list 
     function add_game_list_url(id,name,thumb) {
         console.log(id);
@@ -73,13 +73,9 @@ var app = function() {
             self.vue.game_data['game_likes'] = data.game_likes;
             self.vue.$set(self.vue,'user_game_list',data.game_list);
             self.vue.$set(self.vue,'user_game_list_size',data.game_list.length);
-            //self.vue.user_game_list_size = self.vue.user_game_list_size+1;
-            //self.vue.user_game_list = data.game_list;
-           // console.log(self.vue.user_game_list);
+
         }) 
         self.vue.form_post_content="";
-        //self.get_user_game_list();
-        //self.get_game_data(id);
     };
     
     
@@ -97,17 +93,14 @@ var app = function() {
         $.getJSON(rem_game_list_url(id), function (data) {
             self.vue.game_data['game_in_list'] = 'plus';
             self.vue.game_data['game_likes'] = data.game_likes;
-            console.log(data.game_likes)
             self.vue.$set(self.vue,'user_game_list',data.game_list);
             self.vue.$set(self.vue,'user_game_list_size',data.game_list.length);
 
-            //self.vue.user_game_list_size = self.vue.user_game_list_size-1;
-            //console.log(self.vue.user_game_list);
         })
        
     };
     
-    //gets the user personal's game list
+    //gets the user personal game list
     self.get_user_game_list = function () {
         
         $.getJSON(get_games_from_userlist_url, function (data) {
@@ -120,6 +113,8 @@ var app = function() {
         $("#vue-div").show();
     };
     
+    
+    //-------------Game Postings------------//
     //Gets the posts for the current game selected
     function get_postings_url(curIndex,navi,game_id) {
         var pp = {
@@ -149,12 +144,9 @@ var app = function() {
         var add_posting_url = add_game_post_url+ "?" + $.param(pp)
         $.post(add_posting_url, 
             function (data) {
-                
-                //self.post_button(false,null);
-
             });
             self.get_game_posts(0,'more',self.vue.game_data.id);
-            form_post_content=null;
+            self.vue.form_post_content=null;
     };
     
      self.rem_game_post = function (post_id,game_id) {
@@ -169,8 +161,60 @@ var app = function() {
             self.get_game_posts(0,'more',self.vue.game_data.id);
     };
     
+    //======User messaging-----------//
+    self.start_chat = function(friend_email){
+        //get list of emails
+        
+        self.get_chat_friend();
+        self.get_chat(friend_email);
+       
+        self.goto('messages')
+        
+    }
+    
+    self.get_chat_friend = function(){
+        $.getJSON(get_chat_friends_url, function (data) {
+            self.vue.friend_email_list = data.email_list;
+           // console.log(self.vue.game_list);
+        }) 
+        
+    }
+    
+    self.get_chat=function(friend_email){
+        var pp = {
+                user_email: self.vue.user_id,
+                friend_email: friend_email,
+        };
+        var get_postings_url = get_chat_posts_url+ "?" + $.param(pp)
+         $.getJSON(get_postings_url, function (data) {
+            self.vue.friend_name = data.friend_name;
+            self.vue.friend_email = friend_email;
+            self.vue.friend_chat_list = data.posts;
+        })
+    }
+    
+    self.add_chat_post = function () {
+        var pp = {
+                user_email: self.vue.user_id,
+                friend_email: self.vue.friend_email,
+                post_content: self.vue.form_post_content,
+        };
+        var add_posting_url = add_chat_post_url+ "?" + $.param(pp)
+        $.post(add_posting_url, 
+            function (data) {
+                self.vue.friend_chat_list=data.posts;
+            });
+            if (self.vue.friend_email_list.indexOf(self.vue.friend_email)==-1){
+                self.get_chat_friend();
+            }
+            self.vue.form_post_content=null;
+    };
     
     
+    
+    
+    
+    //----------Gaming News-------------//
     
     //gets gaming news from Reddit
     self.get_gaming_news = function () {
@@ -181,6 +225,22 @@ var app = function() {
 
     };
     
+    //-----Page switching and other stuff----//
+     self.goto = function (page) {
+        if (page == 'messages'){
+            self.vue.game_data='null';
+            self.vue.form_post_content="";
+            self.get_chat_friend();
+        }
+        if (page=='calendar'){
+            self.vue.friend_email_list=[];
+            self.vue.friend_name='';
+            self.vue.friend_email='';
+            self.vue.friend_chat_list=[];
+            self.vue.form_post_content="";
+        }
+        self.vue.page = page;
+    };
     
 
 
@@ -203,8 +263,16 @@ var app = function() {
             more_post: false,
             less_post: false,
             index_post:0,
+            page: 'calendar',
+            friend_email_list:[],
+            friend_name:'',
+            friend_email:'',
+            friend_chat_list:[],
+            
+            
         },
         methods: {
+            goto: self.goto,
             get_games: self.get_games,
             get_game_data: self.get_game_data,
             get_gaming_news: self.get_gaming_news,
@@ -213,7 +281,11 @@ var app = function() {
             get_user_game_list: self.get_user_game_list,
             get_game_posts: self.get_game_posts,
             add_game_post:self.add_game_post,
-            rem_game_post:self.rem_game_post
+            rem_game_post:self.rem_game_post,
+            start_chat:self.start_chat,
+            get_chat_friend:self.get_chat_friend,
+            add_chat_post:self.add_chat_post,
+            get_chat:self.get_chat,
         }
 
     });
