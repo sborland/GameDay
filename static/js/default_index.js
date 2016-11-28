@@ -41,14 +41,16 @@ var app = function() {
         var pp = {
             id: id
         };
-        console.log(get_game_data_url + "?" + $.param(pp))
+
         return get_game_data_url + "?" + $.param(pp);
     }
     self.get_game_data = function (id) {
         $.getJSON(get_game_url(id), function (data) {
             self.vue.game_data = data.game_data;
+            self.vue.get_game_posts(0,'more',self.vue.game_data.id);
             console.log(self.vue.game_data);
-        }) 
+        })
+        self.vue.form_post_content="";
         $("#vue-div").show();
     };
     
@@ -75,7 +77,7 @@ var app = function() {
             //self.vue.user_game_list = data.game_list;
            // console.log(self.vue.user_game_list);
         }) 
-       
+        self.vue.form_post_content="";
         //self.get_user_game_list();
         //self.get_game_data(id);
     };
@@ -102,28 +104,72 @@ var app = function() {
             //self.vue.user_game_list_size = self.vue.user_game_list_size-1;
             //console.log(self.vue.user_game_list);
         })
-
-        //self.get_user_game_list();
-        //self.get_game_data(id);
        
     };
     
+    //gets the user personal's game list
     self.get_user_game_list = function () {
         
         $.getJSON(get_games_from_userlist_url, function (data) {
-           // self.vue.user_game_list = data.game_list;
-          //  self.vue.user_game_list_size = self.vue.user_game_list.length;
             self.vue.user_id=data.user_id;
-           // console.log(self.vue.user_game_list_size);
-          //  console.log(self.vue.user_game_list);
             self.vue.$set(self.vue,'user_game_list',data.game_list);
             self.vue.$set(self.vue,'user_game_list_size',data.game_list.length);
 
         })
-       
-        console.log("MADE IT");
+
         $("#vue-div").show();
     };
+    
+    //Gets the posts for the current game selected
+    function get_postings_url(curIndex,navi,game_id) {
+        var pp = {
+            curIndex:curIndex,
+            navi :navi,
+            game_id:game_id
+        };
+        return get_game_posts_url + "?" + $.param(pp);
+    }
+      self.get_game_posts = function (curIndex,navi,game_id) {
+        $.getJSON(get_postings_url(curIndex, navi,game_id), function (data) {
+            self.vue.game_posts = data.posts;
+            self.vue.more_post = data.has_more;
+            self.vue.less_post = data.has_less;
+            self.vue.index_post = data.currentIndex;
+        })
+    };
+    
+    
+    //adds a new post to the current game's postingss
+    self.add_game_post = function (game_id) {
+        var pp = {
+            user_email: self.vue.user_id,
+                post_content: self.vue.form_post_content,
+                game_id: game_id,
+        };
+        var add_posting_url = add_game_post_url+ "?" + $.param(pp)
+        $.post(add_posting_url, 
+            function (data) {
+                
+                //self.post_button(false,null);
+
+            });
+            self.get_game_posts(0,'more',self.vue.game_data.id);
+            form_post_content=null;
+    };
+    
+     self.rem_game_post = function (post_id,game_id) {
+        var pp = {
+                post_id: post_id,
+                game_id: game_id,
+        };
+        var rem_posting_url = rem_game_post_url+ "?" + $.param(pp)
+        $.post(rem_posting_url, 
+            function (data) {
+            });
+            self.get_game_posts(0,'more',self.vue.game_data.id);
+    };
+    
+    
     
     
     //gets gaming news from Reddit
@@ -146,12 +192,17 @@ var app = function() {
         data: {
             logged_in: false,
             game_list: [],
-            game_data: {},
+            game_data: 'null',
             gaming_news: [],
             gaming_news_response: 'error',
             user_id: 'null',
             user_game_list: [],
             user_game_list_size:0,
+            game_posts:[],
+            form_post_content:null,
+            more_post: false,
+            less_post: false,
+            index_post:0,
         },
         methods: {
             get_games: self.get_games,
@@ -159,7 +210,10 @@ var app = function() {
             get_gaming_news: self.get_gaming_news,
             add_game_list: self.add_game_list,
             rem_game_list: self.rem_game_list,
-            get_user_game_list: self.get_user_game_list
+            get_user_game_list: self.get_user_game_list,
+            get_game_posts: self.get_game_posts,
+            add_game_post:self.add_game_post,
+            rem_game_post:self.rem_game_post
         }
 
     });

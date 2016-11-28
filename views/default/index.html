@@ -9,6 +9,9 @@
     var get_games_from_userlist_url = "{{=URL('gamedata', 'get_games_from_userlist', user_signature=False)}}";
     var add_game_to_userlist_url = "{{=URL('gamedata', 'add_game_to_userlist', user_signature=False)}}";
     var rem_game_from_userlist_url = "{{=URL('gamedata', 'rem_game_from_userlist', user_signature=False)}}";
+    var get_game_posts_url = "{{=URL('gamedata', 'get_game_postings', user_signature=False)}}";
+    var add_game_post_url = "{{=URL('gamedata', 'add_game_postings', user_signature=False)}}";
+    var rem_game_post_url = "{{=URL('gamedata', 'rem_game_postings', user_signature=False)}}";
 </script>
 <link rel='stylesheet' href="{{=URL('static','css/fullcalendar.css')}}"/>
 <script src="{{=URL('static', 'js/jquery.min.js')}}"></script>
@@ -80,8 +83,8 @@
                 <div v-if="user_game_list_size==0">
                     Looks like you haven't saved any games! When you save games, it'll be displayed here!
                 </div>
-                <div v-if="user_game_list_size>0">
-                    <div v-for="game in user_game_list" class="container">
+                <div v-if="user_game_list_size>0" style="height:400px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
+                    <div v-for="game in user_game_list" class="container" >
                         <div class="col-md-2 game_thumb">
                             <img v-bind:src="game.thumb" width="50%" class="preview_image"/>
                         </div>
@@ -91,21 +94,7 @@
                         </div>   
                     </div>
                 </div>
-                <div v-if="user_game_list_size<0">
-                    <div v-for="game in user_game_list" class="container">
-                        <div class="col-md-2 game_thumb">
-                            <img v-bind:src="game.thumb" width="50%" class="preview_image"/>
-                        </div>
-                        <div class="col-md-9 game_title ">
-                            <button class="fa fa-gamepad" id="get_game_data_button" v-on:click="get_game_data(game.id)" ></button>
-                             ${game.name}
-                        </div>   
-                    </div>
-                </div>
-                
               </div>
-                
-           
          </div>
      </div>
      <div class="title"><h2>Daily Gaming News</h2></div>
@@ -199,9 +188,9 @@
             </table>
            </div>
            
-  <h1>--------------------------------------------------------------------------------------------------------------</h1>
+  <h1>--------Click on a button above to display the game below---------------</h1>
     
-           <div class="game_table">
+           <div v-if="game_data!='null'"  class="game_table">
             <table>
                 <tbody>
                 <tr>
@@ -291,8 +280,48 @@
                 
            </tbody>
          </table>
-           
+         <!--Game Posting Section-->
+         <div v-if="user_id!='null'" id="new message section">
+          <form action="#" v-on:submit.prevent="add_game_post(game_data.id)" class="form-horizontal" enctype="multipart/form-data" method="post">
+                <div class="form-group" id="no_table_post_content">
+                    <div>
+                        <input class="form-control string" id="no_table_post_content" v-model="form_post_content"  type="text" />
+                        <span class="help-block"></span>
+                    </div>
+                </div>
+                <div class="new-post-button" id="submit_record__row">
+                    <div>
+                        <input class="btn btn-primary" class="post-button" id="add_post_submit" type="submit" value="Post" />
+                        <input class="btn btn-warning" class="cancel-button" id="cancel_edit_submit"  type="reset" value="Clear" />
+                    </div>
+                </div>
+           </form>
         </div>
+         <div class="post_content">
+            <div class ="post" v-for="post in game_posts">
+                    ${post.post_content}
+                    <div style="color:#0099ff">  
+                        <table>
+                            <tbody>
+                                <tr>
+                                <td style="width:300px; text-align:left">Posted by ${post.post_name}</td>
+                                <td style="width:300px" >Created on ${post.created_on}</td>
+                                <td v-if="post.belongs_to_user==true"><button class="fa fa-trash-o" v-on:click="rem_game_post(post.id,game_data.id)"></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+              </div>
+            <div v-if="more_post" class="go forward posts">
+                <button class="fa fa-arrow-left" v-on:click="get_game_posts(index_post,'more',game_data.id)">Go to Older Posts</button>
+            </div>
+            <div v-if="less_post" class="go back posts">
+                <button class="fa fa-arrow-right" v-on:click="get_game_posts(index_post,'less',game_data.id)">Go to Newer Posts</button>
+            </div>
+        
+        
+        </div>
+        
     
 
 

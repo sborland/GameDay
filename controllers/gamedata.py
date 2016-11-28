@@ -18,7 +18,7 @@ SIZES ={
 IBGDvideo = "https://www.youtube.com/embed/"
 
 import requests
-import time, datetime,json
+import time, datetime,json,random,string
 
 #GLOBAL VARIABLES DON'T TOUCH#
 MONTHS = {'01' : "January",'02' : "February",'03' : "March",'04' : "April",'06' : "May",'07' : "June",'08' : "July",'09' : "August",'10' : "September",'11' : "November",'12' : "December",
@@ -344,7 +344,7 @@ def get_game_dataHelper(listIDs):
 
 #given an id, adds a game to user's list
 def add_game_to_userlist():
-    print request.vars.id
+
     game_id=request.vars.id
     game_name=request.vars.name
     game_thumbnail=request.vars.thumb
@@ -376,7 +376,6 @@ def add_game_to_userlist():
 
 #given an id, removes a game from user's list  
 def rem_game_from_userlist():
-    print request.vars.id
     game_id=request.vars.id
     #grabs user's email, the user's game list and database entry
     curuser_email = db(db.auth_user.id==auth.user_id).select().first().email
@@ -426,14 +425,126 @@ def user_games_list_helper(user_games_dict):
     for key in user_games_dict.keys():
         data = {}
         data['thumb']=user_games_dict[key]['thumbnail']
-        data['name']=(user_games_dict[key]['name'])
+        data['name']=user_games_dict[key]['name']
         data['id']=key
         game_list.append(data)
-    #game_list = sorted(game_list, key = lambda k: k['name'])
+    game_list = sorted(game_list, key = lambda k: k['name'][0])
     return game_list
 
+
+###########Game postings functions##########################    
+def get_game_postings():
+    game_id=request.vars.game_id
+    navi=request.vars.navi
+    curIndex=int(request.vars.curIndex)
+    print "CURRENT INDEX"
+    print curIndex
+    #check if the user is logged in
+    logged_in = auth.user_id is not None
+    if logged_in: 
+        curuser_email = db(db.auth_user.id==auth.user_id).select().first().email
+    else:
+        curuser_email = None
+        
+    #get the list of postings from the list of games
+    game_postings = db(db.games.game_id==game_id).select().first().game_postings_json
+    game_postings = sorted(game_postings, key = lambda k: k['created_on'],reverse=True)
+    num_of_posts = len(game_postings)
+    
+    has_more = True
+    has_less = True
+    max_post = 0
+    min_post = 0
+    post_list = []
     
     
+    if navi == 'more':
+        max_post = curIndex+4
+        inx=curIndex+4
+        min_post = curIndex
+        
+            
+    if navi =="less":
+        min_post = curIndex-4
+        inx=curIndex-4
+        max_post = curIndex
+     
+    #if (inx%4==0):
+    #    inx=num_of_posts
+    #    has_more = False
+    #else:
+    #    inx=curIndex
+     
+    if (max_post >= num_of_posts):
+            max_post=num_of_posts
+            has_more= False
+
+    if (min_post <= 0):
+            min_post=0
+            inx=4
+            has_less = False
+     
+
+    index= min_post
+    while (index!=max_post):
+        post_user = db(db.auth_user.email == game_postings[index]['user_email']).select().first()
+        posts_name= post_user.first_name + ' ' + post_user.last_name
+        
+        if curuser_email == game_postings[index]['user_email']:
+                belong_to_user = True
+        else:
+                belong_to_user = False
+                
+        post = dict(
+                user_email = game_postings[index]['user_email'],
+                post_name = posts_name,
+                post_content = game_postings[index]['post_content'],
+                created_on = game_postings[index]['created_on'],
+                id = game_postings[index]['id'],
+                belongs_to_user = belong_to_user
+            )
+        post_list.append(post)      
+        index = index+1
+    print "NEW INDEX"
+    print inx
+    print "PULLED GAME POSTS"
+    return response.json(dict(posts=post_list,has_more=has_more,has_less=has_less,currentIndex=inx))
+    
+def add_game_postings():
+    game_id=request.vars.game_id
+    user_email=request.vars.user_email
+    post_content=request.vars.post_content
+
+    game_postings = db(db.games.game_id==game_id).select().first().game_postings_json
+    game_db_entry = db(db.games.game_id==game_id).select().first()
+    post = {}
+    post['user_email']=user_email
+    post['created_on']= datetime.datetime.utcnow()
+    post['post_content']=post_content
+    #generates random id for post 
+    post['id']= ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(15)])
+    
+    game_postings.append(post)
+    game_db_entry.game_postings_json = game_postings
+    game_db_entry.update_record()
+
+    return "ok"
+
+def rem_game_postings():
+    game_id=request.vars.game_id
+    post_id=request.vars.post_id
+
+    game_postings = db(db.games.game_id==game_id).select().first().game_postings_json
+    game_db_entry = db(db.games.game_id==game_id).select().first()
+    
+    for i in range(len(game_postings)):
+        if game_postings[i]['id'] == post_id:
+            del game_postings[i]
+            break
+    game_db_entry.game_postings_json = game_postings
+    game_db_entry.update_record()
+    
+    return "ok"
 #testing
 #get_games(11,2016)
 #get_game_data('359')
