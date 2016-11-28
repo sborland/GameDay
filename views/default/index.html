@@ -111,6 +111,21 @@
              </div>
              <div v-if="friend_name!=''" >
                 <div class="title"><h2>Messaging with ${friend_name}</h2></div>
+                <div v-if="friend_games_list.length>1" >
+                     Both yours and ${friend_name}'s game list have these games in common: 
+                    <span v-for="game in friend_games_list" >
+                         ${game}, 
+                    </span>
+                </div>
+                <div v-if="friend_games_list.length==1" >
+                     Both yours and ${friend_name}'s game list have this game in common: 
+                    <span v-for="game in friend_games_list" >
+                         ${game}
+                    </span>
+                </div>
+                <div v-if="friend_games_list.length==0">
+                    You and ${friend_name} don't have any games in common :( Maybe offer some suggestions?
+                </div>
                  <div id="new message section">
                       <form action="#" v-on:submit.prevent="add_chat_post()" class="form-horizontal" enctype="multipart/form-data" method="post">
                             <div class="form-group" id="no_table_post_content">
@@ -128,7 +143,7 @@
                        </form>
                     </div>
                      <div class="post_content">
-                        <div v-if="friend_chat_list!=0" style="height:320px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
+                        <div v-if="friend_chat_list.length!=0" style="height:320px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
                             <div class ="post" v-for="post in friend_chat_list">
                                 ${post.post_content}
                                 <div style="color:#0099ff">  
@@ -145,7 +160,7 @@
                                 </div>
                             </div>
                           </div>
-                          <div v-if="friend_chat_list==0">
+                          <div v-if="friend_chat_list.length==0">
                             No messages found. Post a message above to get the ball rolling!
                           </div>
                     </div>
@@ -387,9 +402,9 @@
                                 <td style="width:300px; text-align:left">Posted by ${post.post_name}</td>
                                 <td style="width:300px" >Created on ${post.created_on}</td>
                                 <td v-if="post.belongs_to_user==true"><button class="fa fa-trash-o" v-on:click="rem_game_post(post.id,game_data.id)"></button></td>
-                                <div v-if="user_id!='null'">
-                                    <td v-if="post.belongs_to_user==false"><button class="fa fa-envelope" v-on:click="start_chat(post.user_email)">Message ${post.post_name}</button></td>
-                                </div>
+                                <td v-if= "user_id!='null'">
+                                    <div v-if="post.belongs_to_user==false"><button class="fa fa-envelope" v-on:click="start_chat(post.user_email)">Message ${post.post_name}</button></div>
+                                </td>
                                 </tr>
                             </tbody>
                         </table>

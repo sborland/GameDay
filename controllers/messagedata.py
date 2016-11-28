@@ -1,5 +1,5 @@
 
-import random, string 
+import random, string,json 
 #returns a list of emails of friends 
 def get_chat_friends():
     curuser_email = db(db.auth_user.id==auth.user_id).select().first().email
@@ -26,7 +26,7 @@ def get_chat_posts():
     friend_name =friend_user.first_name + ' ' + friend_user.last_name
     
     user_messages_entry = db((db.user_messages.user_email==user_email)&(db.user_messages.friend_email==friend_email)).select().first()
-    
+    list_games_chat = get_list_of_games_chat(user_email,friend_email)
     if user_messages_entry is not None:
         user_messages_pull = user_messages_entry.message_json
         for post in user_messages_pull:
@@ -48,7 +48,28 @@ def get_chat_posts():
                 )
             post_list.append(post)
             post_list = sorted(post_list, key = lambda k: k['created_on'],reverse=True)
-    return response.json(dict(posts=post_list,friend_name=friend_name))
+    return response.json(dict(posts=post_list,friend_name=friend_name,list_games_chat=list_games_chat))
+
+def get_list_of_games_chat(user_email,friend_email):
+    user_games_pull = db(db.user_games_list.user_id==user_email).select().first()
+    friend_games_pull =  db(db.user_games_list.user_id==friend_email).select().first()
+
+    if user_games_pull==None:
+          user_games =[]
+    else:
+        user_games_dict =  json.loads(user_games_pull.games_list_json)
+    if friend_games_pull==None:
+          friend_games=[]
+    else:
+        friend_games_dict = json.loads(friend_games_pull.games_list_json)
+    
+    listofsamegames=[]
+    for key in user_games_dict.keys():
+        if key in friend_games_dict.keys():
+            listofsamegames.append(friend_games_dict[str(key)]['name'])
+    return listofsamegames      
+    
+    
     
 #add post to specific chat
 def add_chat_post():

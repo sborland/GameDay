@@ -25,7 +25,6 @@ var app = function() {
         //console.log(get_games_url + "?" + $.param(pp))
         return get_games_list_url + "?" + $.param(pp);
     }
-   
     self.get_games = function (month,year) {
         $.getJSON(get_gaming_month_url(month,year), function (data) {
             self.vue.game_list = data.game_list;
@@ -35,7 +34,7 @@ var app = function() {
     
     
         
-    //Given ID, returns game data
+    //Given game id, returns game data
     function get_game_url(id) {
         console.log(id);
         var pp = {
@@ -56,7 +55,7 @@ var app = function() {
     
     
     //-----------User's Personal Game List-----------///
-    //Given game id and other info, adds game to user list 
+    //Given game id and other info, adds game to user's personal list 
     function add_game_list_url(id,name,thumb) {
         console.log(id);
         var pp = {
@@ -79,7 +78,7 @@ var app = function() {
     };
     
     
-    //Given game id, removes game from user's list 
+    //Given game id, removes game from user's personal list 
     function rem_game_list_url(id) {
         console.log(id);
         var pp = {
@@ -100,7 +99,7 @@ var app = function() {
        
     };
     
-    //gets the user personal game list
+    //gets the user's personal game list
     self.get_user_game_list = function () {
         
         $.getJSON(get_games_from_userlist_url, function (data) {
@@ -115,7 +114,7 @@ var app = function() {
     
     
     //-------------Game Postings------------//
-    //Gets the posts for the current game selected
+    //Gets the posts for the current game selected in game_data
     function get_postings_url(curIndex,navi,game_id) {
         var pp = {
             curIndex:curIndex,
@@ -134,7 +133,8 @@ var app = function() {
     };
     
     
-    //adds a new post to the current game's postingss
+    //adds a new post to the current game's postings
+    //returns user to the first 4 postings
     self.add_game_post = function (game_id) {
         var pp = {
             user_email: self.vue.user_id,
@@ -149,6 +149,8 @@ var app = function() {
             self.vue.form_post_content=null;
     };
     
+    //removes a post from the current game's postings
+    //returns user to the first 4 postings
      self.rem_game_post = function (post_id,game_id) {
         var pp = {
                 post_id: post_id,
@@ -162,16 +164,17 @@ var app = function() {
     };
     
     //======User messaging-----------//
+    //used in game postings to start messaging
+    //people in private messaging
+    //starts up a message with that user
     self.start_chat = function(friend_email){
-        //get list of emails
-        
         self.get_chat_friend();
         self.get_chat(friend_email);
-       
         self.goto('messages')
         
     }
     
+    //gets a list of all the user's active chats
     self.get_chat_friend = function(){
         $.getJSON(get_chat_friends_url, function (data) {
             self.vue.friend_email_list = data.email_list;
@@ -190,6 +193,7 @@ var app = function() {
             self.vue.friend_name = data.friend_name;
             self.vue.friend_email = friend_email;
             self.vue.friend_chat_list = data.posts;
+            self.vue.friend_games_list= data.list_games_chat;
         })
     }
     
@@ -237,6 +241,7 @@ var app = function() {
             self.vue.friend_name='';
             self.vue.friend_email='';
             self.vue.friend_chat_list=[];
+            self.vue.friend_games_list=[];
             self.vue.form_post_content="";
         }
         self.vue.page = page;
@@ -268,6 +273,7 @@ var app = function() {
             friend_name:'',
             friend_email:'',
             friend_chat_list:[],
+            friend_games_list:[],
             
             
         },
