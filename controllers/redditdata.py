@@ -20,10 +20,11 @@ import requests
 clientID = "PNeNm3DsY_t8-g"
 clientSecret = "WPoyJXHV3yB6Ru87UtfOt_IoQwE"
 
-@cache(request.env.path_info,time_expire=120,cache_model=cache.ram)
+@cache(request.env.path_info,time_expire=30,cache_model=cache.ram)
 def get_gaming_news():
     rep= requests.get("https://www.reddit.com/r/gamers.json",
-             headers = {'user_agent':'gamedaytest by /u/gamedayadmin', })
+             headers = {'user_agent':'gameday by /u/gamedayadmin',
+            'client_id':clientID,'client_secret':clientSecret})
     res = rep.json()
     print rep.status_code
 

@@ -237,6 +237,7 @@ var app = function() {
             self.get_chat_friend();
         }
         if (page=='calendar'){
+            self.vue.game_data='null';
             self.vue.friend_email_list=[];
             self.vue.friend_name='';
             self.vue.friend_email='';
