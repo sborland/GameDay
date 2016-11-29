@@ -226,9 +226,9 @@
         </div>
         <div v-else>
            
-                 <div class="title"><h2>Game Calendar</h2></div>
-                 
-                 
+                 <div class="title"><h2>Game Calendar - ${monthDisplay} ${yearDisplay}</h2></div>
+                  <button  id="previous month"   v-on:click="get_games(prevMonth,prevYear)" > <i class="fa fa-arrow-left" aria-hidden="true"></i>  Previous Month </button>
+                  <button  id="next month"   v-on:click="get_games(nextMonth,nextYear)" > <i class="fa fa-arrow-right" aria-hidden="true"></i>  Next Month </button>
                  INSERT Calendar HERE
                  
                  
@@ -426,7 +426,11 @@
                     <td>Date: ${releaseInfo.date}</td>
                   
                 </tr>
-                </tbody>
+                <tr>
+                        <td>Cover</td>
+                        <td>Thumb: <img v-bind:src="game.coverThumb"></td>
+                    </tr>
+                <body>
             </table>
                     
                     </td>

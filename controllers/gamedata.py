@@ -40,24 +40,43 @@ GAMEMODES ={ "1":"Single Player", "2":"Multiplayer", "3":"Co-operative", "4":"Sp
 #Grabs the games that come out that month and year
 #Month is a value from 01 to 12 (MUST INCLUDE THE 0 for single digits)
 #Year is any valid year value
-@cache(request.env.path_info,time_expire=15,cache_model=cache.disk)
+#@cache(request.env.path_info,time_expire=15,cache_model=cache.disk)
 def get_games():
     month = int(request.vars.month)
-    print request.vars.year
     year = int(request.vars.year)
-
+    print "HERE!"
     #handles Dec-Jan case where
     #December overlaps with January
     nextMonth=month+1
     nextYear = year
+    NextMonth = month+1
+    NextYear = year
+    prevMonth = month-1
+    prevYear = year
     if (month==12):
         nextMonth = "01"
         nextYear = year+1
+        NextMonth= 1
+        NextYear = nextYear
+    if (month==1):
+        prevMonth=12
+        prevYear= year-1
     month = str(month)
+    if len(month)==1:
+        month="0"+month
     year = str(year)
     nextMonth = str(nextMonth)
+    if len(nextMonth)==1:
+        nextMonth="0"+nextMonth
     nextYear = str(nextYear)
+    monthDisplay = MONTHS[month]
+    yearDisplay = year
     
+    print prevMonth
+    print prevYear
+    print NextMonth
+    print NextYear
+
     game_list=[]
     
     #Because we are only allowed to pull 50 objects per request, I split up
@@ -115,16 +134,27 @@ def get_games():
                 else:
                     game_in_user_list = 'null'
                 
-                game = dict(
-                    name = gameData['name'].encode("utf-8"),
-                    id = gameData['id'],
-                    game_in_list = game_in_user_list,
-                    release = []
-                )
+                
+                
+
+                    
                 #the game's release date is divided up by information on
                 #region, platform and date. Region & Platform is added to global_variables
                 #See https://market.mashape.com/igdbcom/internet-game-database/overview
                 for releaseData in gameData['release_dates']:
+                    game = dict(
+                        name = gameData['name'].encode("utf-8"),
+                        id = gameData['id'],
+                        game_in_list = game_in_user_list,
+                        release = [],
+                        coverThumb = "https://www.naplesgarden.org/wp-content/themes/naples_botanical/img/notfound.jpg",
+                        coverReg = "https://www.naplesgarden.org/wp-content/themes/naples_botanical/img/notfound.jpg"
+                    )
+                    
+                    if "cover" in gameData:
+                        game['coverThumb'] = IBGDimages+SIZES['thumb']+"/"+gameData['cover']["cloudinary_id"]+".jpg"
+                        game['coverReg'] = IBGDimages+SIZES['small']+"/"+gameData['cover']["cloudinary_id"]+".jpg"
+                        
                     s = int(releaseData['date'])/1000.0
                     realDate = datetime.datetime.fromtimestamp(s).strftime('%d-%m-%Y.%f')
                     #Only grab the relevant release dates
@@ -138,21 +168,24 @@ def get_games():
                         if 'region' in releaseData:
                             gameRelease['region']= REGIONS[str(releaseData['region'])]
                         game['release'].append(gameRelease)
-                game_list.append(game)
+                        game_list.append(game)
+                        
+        game_list = sorted(game_list, key = lambda k: (k['release'][0]['date'],k['id']))
     else:
         StatusRequest = "ERROR"
         
    # for g in game_list:
     #    print g
-    
+
     return response.json(dict(
-        game_list=game_list,
+        game_list=game_list,monthDisplay=monthDisplay,yearDisplay=yearDisplay,
+        NextMonth=NextMonth,NextYear=NextYear,PrevYear=prevYear,PrevMonth=prevMonth
     ))
 
 #helper for get_games - pulls all the games that are going to be released between two dates
 def get_gamesHelper(date1,date2):
     #print IBGDurl+"?fields=name,release_dates&limit=50&filter[release_dates.date][gt]="+date1+"&filter[release_dates.date][lte]="+date2
-    response = requests.get(IBGDurl+"games/?fields=name,release_dates&limit=50&filter[release_dates.date][gt]="+date1+"&filter[release_dates.date][lte]="+date2,
+    response = requests.get(IBGDurl+"games/?fields=name,cover,release_dates&limit=50&filter[release_dates.date][gt]="+date1+"&filter[release_dates.date][lte]="+date2,
         headers={
             "X-Mashape-Key": IGBDkey,
             "Accept": "application/json"
@@ -221,8 +254,6 @@ def get_game_data():
          
          game_data["name"] = res['name'].encode("utf-8")
          game_data['id'] =res['id'] 
-         print "LOOOOOOOOOK AT ME"
-         print game_data['id'] 
          #checks whether the game is in the user's list or not
          if curuser_email is not None:
             game_data['game_in_list']='plus'
@@ -505,9 +536,7 @@ def get_game_postings():
             )
         post_list.append(post)      
         index = index+1
-    print "NEW INDEX"
-    print inx
-    print "PULLED GAME POSTS"
+
     return response.json(dict(posts=post_list,has_more=has_more,has_less=has_less,currentIndex=inx))
     
 def add_game_postings():

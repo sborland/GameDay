@@ -28,6 +28,16 @@ var app = function() {
     self.get_games = function (month,year) {
         $.getJSON(get_gaming_month_url(month,year), function (data) {
             self.vue.game_list = data.game_list;
+            self.vue.monthDisplay =data.monthDisplay;
+            self.vue.yearDisplay =data.yearDisplay;
+            self.vue.nextMonth = data.NextMonth;
+            self.vue.nextYear = data.NextYear;
+            self.vue.prevMonth = data.PrevMonth;
+            self.vue.prevYear = data.PrevYear;
+            
+            self.vue.$set(self.vue,'monthDisplay',data.monthDisplay);
+            self.vue.$set(self.vue,'yearDisplay',data.yearDisplay);
+            self.vue.$set(self.vue,'game_list',data.game_list);
            // console.log(self.vue.game_list);
         })  
     };
@@ -56,12 +66,13 @@ var app = function() {
     
     //-----------User's Personal Game List-----------///
     //Given game id and other info, adds game to user's personal list 
-    function add_game_list_url(id,name,thumb) {
+    function add_game_list_url(id,name,thumb,date) {
         console.log(id);
         var pp = {
             id: id,
             name: name,
-            thumb: thumb
+            thumb: thumb,
+            date: date,
         };
         console.log(add_game_to_userlist_url + "?" + $.param(pp))
         return add_game_to_userlist_url + "?" + $.param(pp);
@@ -248,8 +259,15 @@ var app = function() {
         self.vue.page = page;
     };
     
-
-
+    //Starts on the current month
+    var monthNames = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+    ];
+    
+    var d = new Date();
+    var m = d.getMonth();
+    var y = d.getFullYear();
+    
     //Vue stuff
     self.vue = new Vue({
         el: "#vue-div",
@@ -257,6 +275,12 @@ var app = function() {
         unsafeDelimiters: ['!{', '}'],
         data: {
             logged_in: false,
+            monthDisplay: monthNames[d.getMonth()],
+            yearDisplay: y,
+            nextMonth: monthNames[d.getMonth()],
+            nextYear: y,
+            prevMonth: monthNames[d.getMonth()],
+            prevYear: y,
             game_list: [],
             game_data: 'null',
             gaming_news: [],
@@ -297,10 +321,9 @@ var app = function() {
 
     });
 
-    //Starts on the current month
-    var d = new Date();
-    var m = d.getMonth();
-    var y = d.getFullYear();
+
+
+
     self.get_games(m+1,y);
     self.get_gaming_news();
     self.get_user_game_list();
