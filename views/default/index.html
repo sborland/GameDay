@@ -23,7 +23,13 @@
 <script src="{{=URL('static', 'js/jquery.min.js')}}"></script>
 <script src="{{=URL('static', 'js/moment.min.js')}}"></script>
 <script src="{{=URL('static', 'js/fullcalendar.js')}}"></script>
-        
+<style>
+    td, th{
+        border: 1px solid darkslategray;
+        text-align: left;
+        background-color:lightgrey;
+    }
+</style>
 
 
 {{end}}
@@ -33,7 +39,7 @@
    
 
 
-    <div v-if="page=='calendar'" class="container" id="calendar page" style="height:600px;">
+    <div v-if="page=='calendar'" id="calendar page" style="height:600px;">
          <div id = "main game and calendar" class="col-md-8">
             <div v-if="game_data!='null'"  class="game_table"  >
                  <div class="title"><h2>${game_data.name}</h2></div>
@@ -51,8 +57,8 @@
                     </tr>
                     <tr>
                         <td>Cover</td>
-                        <td>Regular: <img v-bind:src="game_data.coverReg">
-                        Thumb: <img v-bind:src="game_data.coverThumb"></td>
+                        <td><img v-bind:src="game_data.coverReg">
+                        </td>
                     </tr>
                     <tr>
                         <td>Storyline</td>
@@ -94,7 +100,7 @@
                         <td>Screenshots</td>
                           <td><tr v-for="img in game_data.screenshots">
                         <td></td>
-                        <td> <img v-bind:src="img.imgSmallURL"> <img v-bind:src="img.imgMediumURL"> <img v-bind:src="img.imgLargeURL"> </td>
+                        <td><img v-bind:src="img.imgMediumURL"></td>
                         </tr></td>
                     </tr>
                     <tr>
@@ -180,39 +186,32 @@
         </div>
         <div v-else>
            
-                 <div class="title"><h2>Game Calendar - ${monthDisplay} ${yearDisplay}</h2></div>
+            <div class="title"><h2>Game Calendar - ${monthDisplay} ${yearDisplay}</h2></div>
                   <button  id="previous month"   v-on:click="get_games(prevMonth,prevYear)" > <i class="fa fa-arrow-left" aria-hidden="true"></i>  Previous Month </button>
                   <button  id="next month"   v-on:click="get_games(nextMonth,nextYear)" > <i class="fa fa-arrow-right" aria-hidden="true"></i>  Next Month </button>
                  <div class="result_table" style="height:600px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;width:700px;">
             <table>
                 <thead>
                 <tr>
-                    <th></th>
                     <th>Game</th>
-                    <th>ID</th>
                     <th>Release date</th>
                     <th>More Info</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr v-for="game in game_list">
-                    <td></td>
-                    <td>${game.name}</td>
-                    <td>${game.id}</td>
+                    <td><img style="width:90px;height:90px;" v-bind:src="game.coverThumb">
+                    ${game.name}</td>
                     <td>
                     <table>
                 <tbody>
                 <tr v-for="releaseInfo in game.release">
-                    <td></td>
                     <td>Platform: ${releaseInfo.platform}</td>
                     <td>Region: ${releaseInfo.region}</td>
                     <td>Date: ${releaseInfo.date}</td>
 
                 </tr>
-                <tr>
-                        <td>Cover</td>
-                        <td>Thumb: <img v-bind:src="game.coverThumb"></td>
-                    </tr>
+
                 <body>
             </table>
 
