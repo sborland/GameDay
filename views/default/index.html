@@ -23,53 +23,7 @@
 <script src="{{=URL('static', 'js/jquery.min.js')}}"></script>
 <script src="{{=URL('static', 'js/moment.min.js')}}"></script>
 <script src="{{=URL('static', 'js/fullcalendar.js')}}"></script>
-
-<!----------
-<script>
-    $(document).ready(function() {
-
-    // page is now ready, initialize the calendar...
-
-    $('#calendar').fullCalendar({
-        // put your options and callbacks here
-    eventSources: [{
-        events: [
-            {
-                title: 'World of Spider',
-                id: '329',
-                start: '2016-11-20'
-
-            },
-            {
-                title: 'Edgy Game',
-                id: '666',
-                start: '2016-11-21'
-            },
-            {
-
-                title: 'Bad Game',
-                id: '100000000000000000000000000000',
-                start: '2016-11-26'
-            }
-        ],
-        color: 'black',     // an option!
-        textColor: 'yellow' // an option!
-    }],
-    eventClick: function(calEvent, jsEvent, view) {
-
-        alert('Event: ' + calEvent.title);
-        alert('Event: ' + calEvent.id);
-
-        // change the border color just for fun
-        $(this).css('border-color', 'red');
-
-    }
-    })
-
-});
-</script>
-
---->
+        
 
 
 {{end}}
@@ -229,7 +183,52 @@
                  <div class="title"><h2>Game Calendar - ${monthDisplay} ${yearDisplay}</h2></div>
                   <button  id="previous month"   v-on:click="get_games(prevMonth,prevYear)" > <i class="fa fa-arrow-left" aria-hidden="true"></i>  Previous Month </button>
                   <button  id="next month"   v-on:click="get_games(nextMonth,nextYear)" > <i class="fa fa-arrow-right" aria-hidden="true"></i>  Next Month </button>
-                 INSERT Calendar HERE
+                 <div class="result_table" style="height:600px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;width:700px;">
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Game</th>
+                    <th>ID</th>
+                    <th>Release date</th>
+                    <th>More Info</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="game in game_list">
+                    <td></td>
+                    <td>${game.name}</td>
+                    <td>${game.id}</td>
+                    <td>
+                    <table>
+                <tbody>
+                <tr v-for="releaseInfo in game.release">
+                    <td></td>
+                    <td>Platform: ${releaseInfo.platform}</td>
+                    <td>Region: ${releaseInfo.region}</td>
+                    <td>Date: ${releaseInfo.date}</td>
+
+                </tr>
+                <tr>
+                        <td>Cover</td>
+                        <td>Thumb: <img v-bind:src="game.coverThumb"></td>
+                    </tr>
+                <body>
+            </table>
+
+                    </td>
+
+                    <td> <button class="fa fa-gamepad" id="get_game_data_button"   v-on:click="get_game_data(game.id)" ></button></td>
+                    <!---Debugging. probably can use to check whether or not the game is in the list from the monthly schedule
+                    <div class="user-game-list container">
+                    <td v-if="game.game_in_list=='plus'"> <button class="fa fa-plus-circle" id="add_game_to_list"  ></button></td>
+                    <td v-if="game.game_in_list=='minus'"> <button class="fa fa-minus-circle" id="remove_game_from_list"    ></button></td>
+
+                    </div> --->
+               </tr>
+                </tbody>
+            </table>
+           </div>
                  
                  
             </div>
@@ -350,8 +349,17 @@
               </div>
          </div>
      </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
      
-      <div class="title"><h2>Daily Gaming News</h2></div>
+      <div class="title" align="left"><h2>Daily Gaming News</h2></div>
      <div id = "Gaming News" class="gaming news">
         <span v-if="gaming_news_response=='ok'" >
             <div v-for="story in gaming_news" class="container">
@@ -400,52 +408,7 @@
 
 <div class="main_content">
     
-         <div class="result_table">
-            <table>
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Game</th>
-                    <th>ID</th>
-                    <th>Release date</th>
-                    <th>More Info</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="game in game_list">
-                    <td></td>
-                    <td>${game.name}</td>
-                    <td>${game.id}</td>
-                    <td>
-                    <table>
-                <tbody>
-                <tr v-for="releaseInfo in game.release">
-                    <td></td>
-                    <td>Platform: ${releaseInfo.platform}</td>
-                    <td>Region: ${releaseInfo.region}</td>
-                    <td>Date: ${releaseInfo.date}</td>
-                  
-                </tr>
-                <tr>
-                        <td>Cover</td>
-                        <td>Thumb: <img v-bind:src="game.coverThumb"></td>
-                    </tr>
-                <body>
-            </table>
-                    
-                    </td>
-                    
-                    <td> <button class="fa fa-gamepad" id="get_game_data_button"   v-on:click="get_game_data(game.id)" ></button></td>
-                    <!---Debugging. probably can use to check whether or not the game is in the list from the monthly schedule
-                    <div class="user-game-list container">
-                    <td v-if="game.game_in_list=='plus'"> <button class="fa fa-plus-circle" id="add_game_to_list"  ></button></td>
-                    <td v-if="game.game_in_list=='minus'"> <button class="fa fa-minus-circle" id="remove_game_from_list"    ></button></td>
-                    
-                    </div> --->
-               </tr>
-                </tbody>
-            </table>
-           </div>
+
            
   <h1>--------Click on a button above to display the game below---------------</h1>
     
