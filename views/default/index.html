@@ -23,12 +23,15 @@
 <script src="{{=URL('static', 'js/jquery.min.js')}}"></script>
 <script src="{{=URL('static', 'js/moment.min.js')}}"></script>
 <script src="{{=URL('static', 'js/fullcalendar.js')}}"></script>
+
 <style>
     td, th{
         border: 1px solid darkslategray;
         text-align: left;
-        background-color:lightgrey;
         padding: 4px;
+    }
+    tr:nth-child(even){
+        background-color: lightsteelblue;
     }
 </style>
 
@@ -44,7 +47,7 @@
          <div id = "main game and calendar" class="col-md-6">
             <div v-if="game_data!='null'"  class="game_table"  >
                  <div class="title"><h2>${game_data.name}</h2></div>
-                 <button  id="return calendar"   v-on:click="goto('calendar')" > <i class="fa fa-calendar"></i>  Return to Calendar</button>
+                 <button  id="return calendar"   v-on:click="goto('calendar')" style="background-color:darkslateblue;color:white"> <i class="fa fa-calendar"></i>  Return to Calendar</button>
                 <div id="game content" style="height:600px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;width: 900px;">
               <table >
                     <tbody >
@@ -148,10 +151,10 @@
             </div>
                     <br>
              <div v-if="more_post" class="go forward posts">
-                    <button class="fa fa-arrow-left" v-on:click="get_game_posts(index_post,'more',game_data.id)">Go to Older Posts</button>
+                    <button class="fa fa-arrow-left" v-on:click="get_game_posts(index_post,'more',game_data.id)" style="background-color:darkslateblue;color:white">Go to Older Posts</button>
                 </div>
                 <div v-if="less_post" class="go back posts">
-                    <button class="fa fa-arrow-right" v-on:click="get_game_posts(index_post,'less',game_data.id)">Go to Newer Posts</button>
+                    <button class="fa fa-arrow-right" v-on:click="get_game_posts(index_post,'less',game_data.id)" style="background-color:darkslateblue;color:white">Go to Newer Posts</button>
              </div>
              <div class="post_content">
                 <div v-if="game_posts.length!=0">
@@ -184,25 +187,26 @@
         <div v-else>
            
             <div class="title"><h2>Game Calendar - ${monthDisplay} ${yearDisplay}</h2></div>
-                  <button  id="previous month"   v-on:click="get_games(prevMonth,prevYear)" > <i class="fa fa-arrow-left" aria-hidden="true"></i>  Previous Month </button>
-                  <button  id="next month"   v-on:click="get_games(nextMonth,nextYear)" > <i class="fa fa-arrow-right" aria-hidden="true"></i>  Next Month </button>
+                  <button  id="previous month"   v-on:click="get_games(prevMonth,prevYear)" style="background-color:darkslateblue;color:white"> <i class="fa fa-arrow-left" aria-hidden="true"></i>  Previous Month </button>
+                  <button  id="next month"   v-on:click="get_games(nextMonth,nextYear)" style="background-color:darkslateblue;color:white"> <i class="fa fa-arrow-right" aria-hidden="true"></i>  Next Month </button>
                   <div class="result_table" style="height:600px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;width:900px;">
                         <table>
                             <thead>
                                 <tr>
                                     <th>Game</th>
+                                    <th></th>
                                     <th>Release date</th>
                                     <th>More Info</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="game in game_list">
-                                    <td><img style="width:90px;height:90px;" v-bind:src="game.coverThumb">
-                                    ${game.name}</td>
+                                <tr v-for="game in game_list" >
+                                    <td><img style="width:90px;height:90px;" v-bind:src="game.coverThumb"></td>
+                                    <td>${game.name}</td>
                                     <td>
                                     <table>
                                 <tr v-for="releaseInfo in game.release">
-                                    <td>Platform: ${releaseInfo.platform}</td>
+                                        <td>Platform: ${releaseInfo.platform}</td>
                                         <td>Region: ${releaseInfo.region}</td>
                                         <td>Date: ${releaseInfo.date}</td>
 
@@ -210,7 +214,7 @@
                                     </table>
                                     </td>
 
-                    <td> <button class="fa fa-gamepad" id="get_game_data_button"   v-on:click="get_game_data(game.id)" ></button></td>
+                    <td> <button class="fa fa-gamepad" id="get_game_data_button"   v-on:click="get_game_data(game.id)" style="background-color:darkslateblue;color:white"></button></td>
                     <!---Debugging. probably can use to check whether or not the game is in the list from the monthly schedule
                     <div class="user-game-list container">
                     <td v-if="game.game_in_list=='plus'"> <button class="fa fa-plus-circle" id="add_game_to_list"  ></button></td>
@@ -231,16 +235,16 @@
                 Please log in to see your personal list of games :)
              </div>
              <div v-else >
-                <button v-on:click="goto('messages')" style="width:250px;"> <i class="fa fa-envelope-o"></i> Messages </button>
+                <button v-on:click="goto('messages')" style="width:250px;background-color:darkslateblue;color:white"> <i class="fa fa-envelope-o"></i> Messages </button>
                 <div v-if="user_game_list_size==0">
                     Looks like you haven't saved any games! When you save games, it'll be displayed here!
                 </div>
                 <div v-if="user_game_list_size>0" style="height:600px;width:325px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
                     <div v-for="game in user_game_list" class="container" >
-                         <button id="get_game_data_button" v-on:click="get_game_data(game.id)"   >
+                         <button id="get_game_data_button" v-on:click="get_game_data(game.id)" style="background-color:lightblue">
                              <table>
                                 <tbody>
-                                    <tr>
+                                    <tr style="background-color:lightblue">
                                         <td> <div style="width:50px;"> <img v-bind:src="game.thumb" width="100%" class="preview_image"/> </div>
                                         </td>
                                         <td> <div style="width:200px;white-space: initial;word-wrap: break-word;"> ${game.name}</div>   
@@ -296,16 +300,17 @@
                         <div v-if="friend_chat_list.length!=0" style="height:500px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
                             <div class ="post" v-for="post in friend_chat_list">
                                 ${post.post_content}
-                                <div style="color:#0099ff">  
+                                <br>
+                                <br>
+                                <div style="color:#0099ff">
                                     <table>
-                                        <tbody>
-                                            <tr>
+
                                             <td v-if="post.belongs_to_user==false" style="width:300px; text-align:left"> ${post.post_name}</td>
                                             <td v-if="post.belongs_to_user==true" style="width:300px; text-align:left"> You </td>
                                             <td style="width:300px" >Sent on ${post.created_on}</td>
                                             <!--<td v-if="post.belongs_to_user==true"><button class="fa fa-trash-o" v-on:click="rem_game_post(post.id,game_data.id)"></button></td>-->
-                                            </tr>
-                                        </tbody>
+
+
                                     </table>
                                 </div>
                             </div>
@@ -326,14 +331,14 @@
                 Please log in to see your personal list of messages
              </div>
              <div v-else>
-                <button class="btn orange" v-on:click="goto('calendar')"> <i class="fa fa-calendar"></i> Calendar </button>
+                <button class="btn orange" v-on:click="goto('calendar')" style="background-color:darkslateblue;color:white"> <i class="fa fa-calendar"></i> Calendar </button>
                 <div v-if="friend_email_list.length==0">
                    Looks like you don't have any ongoing messages (yet)! Start up a chat with someone on a game's page!
                 </div>
                 <div v-if="friend_email_list.length>0" style="height:600px;width:300px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
                     <div v-for="email in friend_email_list" class="container" >
                         <div class="col-md-8 friend_list ">
-                            <button class="fa fa-envelope"  id="get_chat_button" v-on:click="get_chat(email.email)" > </button> ${email.name}
+                            <button class="fa fa-envelope"  id="get_chat_button" v-on:click="get_chat(email.email)" style="background-color:orange;color:white"> </button> ${email.name}
                              
                         </div>   
                     </div>
