@@ -48,6 +48,8 @@
             <div v-if="game_data!='null'"  class="game_table"  >
                  <div class="title"><h2>${game_data.name}</h2></div>
                  <button  id="return calendar"   v-on:click="goto('calendar')" style="background-color:darkslateblue;color:white"> <i class="fa fa-calendar"></i>  Return to Calendar</button>
+                    <div v-if="game_data.game_in_list=='plus'"> <button class="fa fa-plus-circle" id="add_game_to_list_button"   v-on:click="add_game_list(game_data.id,game_data.name,game_data.coverThumb)" style="background-color:lightblue;color:white">Add game to list</button></div>
+                    <div v-if="game_data.game_in_list=='minus'"> <button class="fa fa-minus-circle" id="remove_game_from_list_button"   v-on:click="rem_game_list(game_data.id)" style="background-color:red;color:white">Remove game from list</button></div>
                 <div id="game content" style="height:600px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;width: 900px;">
               <table >
                     <tbody >
@@ -122,13 +124,7 @@
                         <td v-if="game_data.game_likes != 1">${game_data.game_likes} people have this game in their list! <div v-if="game_data.game_in_list=='minus'"> (Including you!)</div></td>
                         <td v-if="game_data.game_likes == 1">${game_data.game_likes} person has this game in their list! <div v-if="game_data.game_in_list=='minus'"> (That's you!)</div></td>
                     </tr>
-                    <tr>
-                     <div class="user-game-list container">
-                        <td v-if="game_data.game_in_list=='plus'"> <button class="fa fa-plus-circle" id="add_game_to_list_button"   v-on:click="add_game_list(game_data.id,game_data.name,game_data.coverThumb)" ></button></td>
-                        <td v-if="game_data.game_in_list=='minus'"> <button class="fa fa-minus-circle" id="remove_game_from_list_button"   v-on:click="rem_game_list(game_data.id)" ></button></td>
-                        
-                  </div>
-                  </tr>
+
                     
                </tbody>
              </table>
@@ -137,7 +133,7 @@
               <form action="#" v-on:submit.prevent="add_game_post(game_data.id)" class="form-horizontal" enctype="multipart/form-data" method="post">
                     <div class="form-group" id="no_table_post_content">
                         <div>
-                            <input class="form-control string" id="no_table_post_content" v-model="form_post_content"  type="text" />
+                            <textarea class="form-control string" id="no_table_post_content" v-model="form_post_content"  type="text" rows="2"></textarea>
                             <span class="help-block"></span>
                         </div>
                     </div>
@@ -359,12 +355,16 @@
      <div id = "Gaming News" class="gaming news">
         <span v-if="gaming_news_response=='ok'" >
             <div v-for="story in gaming_news" class="container">
-                <div class="col-md-2 news_image">
-                    <img v-bind:src="story.preview" width="50%" class="preview_image"/>
-                </div>
-                <div class="col-md-10 news_title ">
-                  <h3>  <a v-bind:href="story.url" target="_blank">${story.title}</a> </h3>
-                </div>
+                <table style="table-layout:fixed">
+                    <tr>
+                    <td><div class="col-md-2 news_image">
+                        <img v-bind:src="story.preview" width="250px" height="150px" class="preview_image"/>
+                    </div></td>
+                    <td  width="650px"><div class="col-md-10 news_title ">
+                        <h3>  <a v-bind:href="story.url" target="_blank">${story.title}</a> </h3>
+                    </div></td>
+                    </tr>
+                </table>
             </div>
             <!--------Another way to display---------
              <div class="col-md-1 news_image">
