@@ -55,12 +55,12 @@
                 <button id="add_game_to_list_button" v-if="game_data.game_in_list=='plus'"
                         v-on:click="add_game_list(game_data.id,game_data.name,game_data.coverThumb)"
                         style="background-color:lightblue;color:white">
-                    <i class="fa fa-plus-circle"></i> Add to Personal Gaming List
+                    <i class="fa fa-plus-circle"></i> Add to Personal Game List
                 </button>
 
                 <button id="remove_game_from_list_button" v-if="game_data.game_in_list=='minus'"
                         v-on:click="rem_game_list(game_data.id)" style="background-color:red;color:white">
-                    <i class="fa fa-minus-circle"></i> Remove from Personal Gaming List
+                    <i class="fa fa-minus-circle"></i> Remove from Personal Game List
                 </button>
                 <br><br>
 
@@ -158,13 +158,13 @@
 
 
                         <tr>
-                            <td>How many people have added this game to their Personal Gaming List:</td>
+                            <td>How many people have added this game to their Personal Game List:</td>
                             <td v-if="game_data.game_likes != 1">
-                                ${game_data.game_likes} people have this game in their Personal Gaming List!
+                                ${game_data.game_likes} people have this game in their Personal Game List!
                                 <div v-if="game_data.game_in_list=='minus'"> (Including you!)</div>
                             </td>
                             <td v-if="game_data.game_likes == 1">
-                                ${game_data.game_likes} person has this game in their Personal Gaming List!
+                                ${game_data.game_likes} person has this game in their Personal Game List!
                                 <div v-if="game_data.game_in_list=='minus'"> (That's you!)</div>
                             </td>
                         </tr>
@@ -176,6 +176,7 @@
 
 
                     <!-- Comments Section -->
+                    <!-- TODO: Ditch this code and use Henry's so that it actually updates after posting!-->
                     <div v-if="user_id!='null'" id="new message section">
                         <form action="#" v-on:submit.prevent="add_game_post(game_data.id)" class="form-horizontal"
                               enctype="multipart/form-data" method="post">
@@ -304,7 +305,7 @@
         </div>
 
         <div id="user list" class="col-md-4" style="height:800px;">
-            <div class="title"><h2>Personal Gaming List</h2></div>
+            <div class="title"><h2>Personal Game List</h2></div>
             <div v-if="user_id=='null'">
                 Please log in to see your personal list of games.
             </div>
@@ -346,21 +347,22 @@
 
 
     <!-- Messages Section -->
+    <!-- TODO: Change Clear to Refresh? -->
     <div v-if="page=='messages'" class="container" id="messages page" style="height:800px;">
         <div id="list of messages" class="col-md-8">
             <div v-if="user_id=='null'">
                 Please log in to see your personal messages.
             </div>
             <div v-if="friend_name!=''">
-                <div class="title"><h2>Messaging with ${friend_name}</h2></div>
+                <div class="title"><h2>Messaging ${friend_name}</h2></div>
                 <div v-if="friend_games_list.length>1">
-                    Both yours and ${friend_name}'s game list have these games in common:
+                    Both yours and ${friend_name}'s Personal Game List have these games in common:
                     <span v-for="game in friend_games_list">
                          ${game}, 
                     </span>
                 </div>
                 <div v-if="friend_games_list.length==1">
-                    Both yours and ${friend_name}'s game list have this game in common:
+                    Both yours and ${friend_name}'s Personal Game List have this game in common:
                     <span v-for="game in friend_games_list">
                          ${game}
                     </span>
@@ -388,9 +390,11 @@
                         </div>
                     </form>
                 </div>
+                <!-- Text Boxes -->
                 <div class="post_content">
+                    <!-- Hardcoded height, maybe find some way to dynamically set it -->
                     <div v-if="friend_chat_list.length!=0"
-                         style="height:500px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
+                         style="height:528px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
                         <div class="post" v-for="post in friend_chat_list">
                             ${post.post_content}
                             <br>
