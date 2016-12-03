@@ -4,7 +4,7 @@
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
     var get_games_list_url = "{{=URL('gamedata', 'get_games', user_signature=False)}}";
-    var get_game_data_url =  "{{=URL('gamedata', 'get_game_data', user_signature=False)}}";
+    var get_game_data_url = "{{=URL('gamedata', 'get_game_data', user_signature=False)}}";
     var get_gaming_news_url = "{{=URL('redditdata', 'get_gaming_news', user_signature=False)}}";
     //user's list stuff
     var get_games_from_userlist_url = "{{=URL('gamedata', 'get_games_from_userlist', user_signature=False)}}";
@@ -25,324 +25,408 @@
 <script src="{{=URL('static', 'js/fullcalendar.js')}}"></script>
 
 <style>
-    td, th{
+    td, th {
         border: 1px solid darkslategray;
         text-align: left;
         padding: 4px;
     }
-    tr:nth-child(even){
+
+    tr:nth-child(even) {
         background-color: lightsteelblue;
     }
 </style>
 
 
 {{end}}
-    
-     
+
+
 <div id="vue-div" class="display:none">
-   
 
 
     <div v-if="page=='calendar'" id="calendar page" style="height:600px;">
-         <div id = "main game and calendar" class="col-md-6">
-            <div v-if="game_data!='null'"  class="game_table"  >
-                 <div class="title"><h2>${game_data.name}</h2></div>
-                 <button  id="return calendar"   v-on:click="goto('calendar')" style="background-color:darkslateblue;color:white"> <i class="fa fa-calendar"></i>  Return to Calendar</button>
-                    <div v-if="game_data.game_in_list=='plus'"> <button class="fa fa-plus-circle" id="add_game_to_list_button"   v-on:click="add_game_list(game_data.id,game_data.name,game_data.coverThumb)" style="background-color:lightblue;color:white">Add game to list</button></div>
-                    <div v-if="game_data.game_in_list=='minus'"> <button class="fa fa-minus-circle" id="remove_game_from_list_button"   v-on:click="rem_game_list(game_data.id)" style="background-color:red;color:white">Remove game from list</button></div>
-                <div id="game content" style="height:600px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;width: 900px;">
-              <table >
-                    <tbody >
-                    <tr>
-                        <td><b>Name</b></td>
-                        <td>${game_data.name}</td>
-                    </tr>
-                    <tr>
-                        <td><b>ID</b></td>
-                        <td>${game_data.id}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Cover</b></td>
-                        <td><img v-bind:src="game_data.coverReg">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><b>Storyline</b></td>
-                        <td>${game_data.storyline}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Summary</b></td>
-                        <td>${game_data.summary}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Publishers</b></td>
-                       <td><tr v-for="pub in game_data.publishers">
-                        <td></td>
-                        <td> ${pub} </td>
+        <div id="main game and calendar" class="col-md-6">
+
+            <!--Game Info-->
+            <div v-if="game_data!='null'" class="game_table">
+                <div class="title"><h2>${game_data.name}</h2></div>
+                <button id="return calendar" v-on:click="goto('calendar')" style="background-color:darkslateblue;color:white">
+                    <i class="fa fa-calendar"></i> Return to Calendar
+                </button>
+                <button id="add_game_to_list_button" v-if="game_data.game_in_list=='plus'"
+                        v-on:click="add_game_list(game_data.id,game_data.name,game_data.coverThumb)"
+                        style="background-color:lightblue;color:white">
+                    <i class="fa fa-plus-circle"></i> Add to Personal Gaming List
+                </button>
+
+                <button id="remove_game_from_list_button" v-if="game_data.game_in_list=='minus'"
+                        v-on:click="rem_game_list(game_data.id)" style="background-color:red;color:white">
+                    <i class="fa fa-minus-circle"></i> Remove from Personal Gaming List
+                </button>
+                <br><br>
+
+                <div id="game content"
+                     style="height:600px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;width: 900px;">
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td><b>Name</b></td>
+                            <td>${game_data.name}</td>
                         </tr>
-                    <tr>
-                        <td><b>Developers</b></td>
-                        <td><tr v-for="dev in game_data.developers">
-                        <td></td>
-                        <td> ${dev} </td>
+                        <!--
+                        <tr>
+                            <td><b>ID</b></td>
+                            <td>${game_data.id}</td>
+                        </tr>-->
+                        <tr>
+                            <td><b>Cover</b></td>
+                            <td><img v-bind:src="game_data.coverReg">
+                            </td>
                         </tr>
-                    <tr>
-                        <td><b>Themes</b></td>
-                        <td><tr v-for="theme in game_data.themes">
-                        <td></td>
-                        <td> ${theme} </td>
+                        <tr>
+                            <td><b>Storyline</b></td>
+                            <td>${game_data.storyline}</td>
                         </tr>
-                    <tr>
-                        <td><b>Player mode</b></td>
-                        <td><tr v-for="mode in game_data.gameModes">
-                        <td></td>
-                        <td> ${mode} </td>
+                        <tr>
+                            <td><b>Summary</b></td>
+                            <td>${game_data.summary}</td>
                         </tr>
-                    <tr>
-                        <td><b>Screenshots</b></td>
-                          <td><tr v-for="img in game_data.screenshots">
-                        <td></td>
-                        <td><img v-bind:src="img.imgMediumURL"></td>
+                        <tr>
+                            <td><b>Publishers</b></td>
+                            <td>
+                        <tr v-for="pub in game_data.publishers">
+                            <td></td>
+                            <td> ${pub}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Developers</b></td>
+                            <td>
+                        <tr v-for="dev in game_data.developers">
+                            <td></td>
+                            <td> ${dev}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Themes</b></td>
+                            <td>
+                        <tr v-for="theme in game_data.themes">
+                            <td></td>
+                            <td> ${theme}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Player mode</b></td>
+                            <td>
+                        <tr v-for="mode in game_data.gameModes">
+                            <td></td>
+                            <td> ${mode}</td>
+                        </tr>
+                        <tr>
+                            <td><b>Screenshots</b></td>
+                            <td>
+                        <tr v-for="img in game_data.screenshots">
+                            <td></td>
+                            <td><img v-bind:src="img.imgMediumURL"></td>
                         </tr>
 
-                    <tr>
-                        <td><b>Videos</b></td>
-                          <td><tr v-for="vid in game_data.videos">
-                        <td></td>
-                        <td> ${vid.vidName}  <embed v-bind:src="vid.vidURL"> </td>
+                        <tr>
+                            <td><b>Videos</b></td>
+                            <td>
+                        <tr v-for="vid in game_data.videos">
+                            <td></td>
+                            <td> ${vid.vidName}
+                                <embed v-bind:src="vid.vidURL">
+                            </td>
                         </tr>
-                    <tr>
-                        <td><b>Release&nbsp;</b></td>
-                        <td><tr v-for="releaseInfo in game_data.release">
-                        <td></td>
-                        <td>Platform: ${releaseInfo.platform}
-                        Region: ${releaseInfo.region}
-                        Date: ${releaseInfo.date}  </td>
+                        <tr>
+                            <td><b>Release&nbsp;</b></td>
+                            <td>
+                        <tr v-for="releaseInfo in game_data.release">
+                            <td></td>
+                            <td>Platform: ${releaseInfo.platform}
+                                Region: ${releaseInfo.region}
+                                Date: ${releaseInfo.date}
+                            </td>
                         </tr>
-                    <tr>
-                        <td>How many people have added this game to their list:</td>
-                        <td v-if="game_data.game_likes != 1">${game_data.game_likes} people have this game in their list! <div v-if="game_data.game_in_list=='minus'"> (Including you!)</div></td>
-                        <td v-if="game_data.game_likes == 1">${game_data.game_likes} person has this game in their list! <div v-if="game_data.game_in_list=='minus'"> (That's you!)</div></td>
-                    </tr>
+                        <tr>
+                            <td>How many people have added this game to their Personal Gaming List:</td>
+                            <td v-if="game_data.game_likes != 1">
+                                ${game_data.game_likes} people have this game in their Personal Gaming List!
+                                <div v-if="game_data.game_in_list=='minus'"> (Including you!)</div>
+                            </td>
+                            <td v-if="game_data.game_likes == 1">
+                                ${game_data.game_likes} person has this game in their Personal Gaming List!
+                                <div v-if="game_data.game_in_list=='minus'"> (That's you!)</div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
 
-                    
-               </tbody>
-             </table>
-             <!--Game Posting Section-->
-             <div v-if="user_id!='null'" id="new message section">
-              <form action="#" v-on:submit.prevent="add_game_post(game_data.id)" class="form-horizontal" enctype="multipart/form-data" method="post">
-                    <div class="form-group" id="no_table_post_content">
-                        <div>
-                            <textarea class="form-control string" id="no_table_post_content" v-model="form_post_content"  type="text" rows="2"></textarea>
-                            <span class="help-block"></span>
-                        </div>
-                    </div>
-                    <div class="new-post-button" id="submit_record__row">
-                        <div>
-                            <input class="btn btn-primary" class="post-button" id="add_post_submit" type="submit" value="Post" />
-                            <input class="btn btn-warning" class="cancel-button" id="cancel_edit_submit"  type="reset" value="Clear" />
-                        </div>
-                    </div>
-               </form>
-            </div>
-                    <br>
-             <div v-if="more_post" class="go forward posts">
-                    <button class="fa fa-arrow-left" v-on:click="get_game_posts(index_post,'more',game_data.id)" style="background-color:darkslateblue;color:white">Go to Older Posts</button>
-                </div>
-                <div v-if="less_post" class="go back posts">
-                    <button class="fa fa-arrow-right" v-on:click="get_game_posts(index_post,'less',game_data.id)" style="background-color:darkslateblue;color:white">Go to Newer Posts</button>
-             </div>
-             <div class="post_content">
-                <div v-if="game_posts.length!=0">
-                    <div class ="post" v-for="post in game_posts">
-                        ${post.post_content}
-                        <div style="color:#0099ff">  
-                            <table>
-                                <tbody>
-                                    <tr>
-                                        <br>
-                                    <div style="width:300px; text-align:left">Posted by ${post.post_name}</div>
-                                    <div style="width:300px" >Created on ${post.created_on}</div>
-                                    <div v-if="post.belongs_to_user==true"><button class="fa fa-trash-o" v-on:click="rem_game_post(post.id,game_data.id)"></button></div>
-                                    <div v-if= "user_id!='null'">
-                                        <div v-if="post.belongs_to_user==false"><button v-on:click="start_chat(post.user_email)"> <i class="fa fa-envelope-o"></i> Message ${post.post_name}</button></div>
-                                    </div>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                  </div>
-                  <div v-if="game_posts.length==0">
-                        No posts have been posted on this game.
-                  </div>
-                
-            </div>
-        </div>
-        </div>
-        <div v-else>
-           
-            <div class="title"><h2>Game Calendar - ${monthDisplay} ${yearDisplay}</h2></div>
-                  <button  id="previous month"   v-on:click="get_games(prevMonth,prevYear)" style="background-color:darkslateblue;color:white"> <i class="fa fa-arrow-left" aria-hidden="true"></i>  Previous Month </button>
-                  <button  id="next month"   v-on:click="get_games(nextMonth,nextYear)" style="background-color:darkslateblue;color:white"> <i class="fa fa-arrow-right" aria-hidden="true"></i>  Next Month </button>
-                  <div class="result_table" style="height:600px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;width:900px;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Game</th>
-                                    <th></th>
-                                    <th>Release date</th>
-                                    <th>More Info</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="game in game_list" >
-                                    <td><img style="width:90px;height:90px;" v-bind:src="game.coverThumb"></td>
-                                    <td>${game.name}</td>
-                                    <td>
-                                    <table>
-                                <tr v-for="releaseInfo in game.release">
-                                        <td>Platform: ${releaseInfo.platform}</td>
-                                        <td>Region: ${releaseInfo.region}</td>
-                                        <td>Date: ${releaseInfo.date}</td>
 
-                                </tr>
-                                    </table>
-                                    </td>
-
-                    <td> <button class="fa fa-gamepad" id="get_game_data_button"   v-on:click="get_game_data(game.id)" style="background-color:darkslateblue;color:white"></button></td>
-                    <!---Debugging. probably can use to check whether or not the game is in the list from the monthly schedule
-                    <div class="user-game-list container">
-                    <td v-if="game.game_in_list=='plus'"> <button class="fa fa-plus-circle" id="add_game_to_list"  ></button></td>
-                    <td v-if="game.game_in_list=='minus'"> <button class="fa fa-minus-circle" id="remove_game_from_list"    ></button></td>
-
-                    </div> --->
-               </tr>
-                </tbody>
-            </table>
-           </div>
-                 
-                 
-            </div>
-        </div>
-        <div id = "user list" class="col-md-4"  style="height:800px;">
-           <div class="title"><h2>Personal Gaming List</h2></div>
-             <div v-if="user_id=='null'" >
-                Please log in to see your personal list of games :)
-             </div>
-             <div v-else >
-                <button v-on:click="goto('messages')" style="width:250px;background-color:darkslateblue;color:white"> <i class="fa fa-envelope-o"></i> Messages </button>
-                <div v-if="user_game_list_size==0">
-                    Looks like you haven't saved any games! When you save games, it'll be displayed here!
-                </div>
-                <div v-if="user_game_list_size>0" style="height:600px;width:325px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
-                    <div v-for="game in user_game_list" class="container" >
-                         <button id="get_game_data_button" v-on:click="get_game_data(game.id)" style="background-color:lightblue">
-                             <table>
-                                <tbody>
-                                    <tr style="background-color:lightblue">
-                                        <td> <div style="width:50px;"> <img v-bind:src="game.thumb" width="100%" class="preview_image"/> </div>
-                                        </td>
-                                        <td> <div style="width:200px;white-space: initial;word-wrap: break-word;"> ${game.name}</div>   
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </button>
-                    </div>
-                </div>
-              </div>
-         </div>
-     </div>
-     <div v-if="page=='messages'" class="container" id="messages page" style="height:800px;">
-        <div id = "list of messages" class="col-md-8" >
-            <div v-if="user_id=='null'" >
-                Please log in to see your personal messages
-             </div>
-             <div v-if="friend_name!=''" >
-                <div class="title"><h2>Messaging with ${friend_name}</h2></div>
-                <div v-if="friend_games_list.length>1" >
-                     Both yours and ${friend_name}'s game list have these games in common: 
-                    <span v-for="game in friend_games_list" >
-                         ${game}, 
-                    </span>
-                </div>
-                <div v-if="friend_games_list.length==1" >
-                     Both yours and ${friend_name}'s game list have this game in common: 
-                    <span v-for="game in friend_games_list" >
-                         ${game}
-                    </span>
-                </div>
-                <div v-if="friend_games_list.length==0">
-                    You and ${friend_name} don't have any games in common :( Maybe offer some suggestions?
-                </div>
-                 <div id="new message section">
-                      <form action="#" v-on:submit.prevent="add_chat_post()" class="form-horizontal" enctype="multipart/form-data" method="post">
+                    <!--Game Comments Section-->
+                    <div v-if="user_id!='null'" id="new message section">
+                        <form action="#" v-on:submit.prevent="add_game_post(game_data.id)" class="form-horizontal"
+                              enctype="multipart/form-data" method="post">
                             <div class="form-group" id="no_table_post_content">
                                 <div>
-                                    <input class="form-control string" id="no_table_post_content" v-model="form_post_content"  type="text" />
+                                    <textarea class="form-control string" id="no_table_post_content"
+                                              v-model="form_post_content" type="text" rows="2"></textarea>
                                     <span class="help-block"></span>
                                 </div>
                             </div>
                             <div class="new-post-button" id="submit_record__row">
                                 <div>
-                                    <input class="btn btn-primary" class="post-button" id="add_post_submit" type="submit" value="Post" />
-                                    <input class="btn btn-warning" class="cancel-button" id="cancel_edit_submit"  type="reset" value="Clear" />
+                                    <input class="btn btn-primary" class="post-button" id="add_post_submit"
+                                           type="submit" value="Post"/>
+                                    <input class="btn btn-warning" class="cancel-button" id="cancel_edit_submit"
+                                           type="reset" value="Clear"/>
                                 </div>
                             </div>
-                       </form>
+                        </form>
                     </div>
-                     <div class="post_content">
-                        <div v-if="friend_chat_list.length!=0" style="height:500px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
-                            <div class ="post" v-for="post in friend_chat_list">
+                    <br>
+                    <div v-if="more_post" class="go forward posts">
+                        <button class="fa fa-arrow-left" v-on:click="get_game_posts(index_post,'more',game_data.id)"
+                                style="background-color:darkslateblue;color:white"> Older Comments
+                        </button>
+                    </div>
+                    <div v-if="less_post" class="go back posts">
+                        <button class="fa fa-arrow-right" v-on:click="get_game_posts(index_post,'less',game_data.id)"
+                                style="background-color:darkslateblue;color:white"> Newer Comments
+                        </button>
+                    </div>
+                    <div class="post_content">
+                        <div v-if="game_posts.length!=0">
+                            <div class="post" v-for="post in game_posts">
                                 ${post.post_content}
-                                <br>
-                                <br>
                                 <div style="color:#0099ff">
                                     <table>
-
-                                            <td v-if="post.belongs_to_user==false" style="width:300px; text-align:left"> ${post.post_name}</td>
-                                            <td v-if="post.belongs_to_user==true" style="width:300px; text-align:left"> You </td>
-                                            <td style="width:300px" >Sent on ${post.created_on}</td>
-                                            <!--<td v-if="post.belongs_to_user==true"><button class="fa fa-trash-o" v-on:click="rem_game_post(post.id,game_data.id)"></button></td>-->
-
-
+                                        <tbody>
+                                        <tr>
+                                            <br>
+                                            <div style="width:300px; text-align:left">Posted by ${post.post_name}</div>
+                                            <div style="width:300px">Created on ${post.created_on}</div>
+                                            <div v-if="post.belongs_to_user==true">
+                                                <button class="fa fa-trash-o"
+                                                        v-on:click="rem_game_post(post.id,game_data.id)"></button>
+                                            </div>
+                                            <div v-if="user_id!='null'">
+                                                <div v-if="post.belongs_to_user==false">
+                                                    <button v-on:click="start_chat(post.user_email)"><i
+                                                            class="fa fa-envelope-o"></i> Message ${post.post_name}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </tr>
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
-                          </div>
-                          <div v-if="friend_chat_list.length==0">
-                            No messages found. Post a message above to get the ball rolling!
-                          </div>
+                        </div>
+                        <div v-if="game_posts.length==0">
+                            No comments have been posted on this game. Be the first to comment!
+                        </div>
+
                     </div>
-                   </div>
-             <div v-if="friend_name==''" >
+                </div>
+            </div>
+
+
+            <!--Game Calendar-->
+            <div v-else>
+                <div class="title"><h2>Game Calendar - ${monthDisplay} ${yearDisplay}</h2></div>
+                <button id="previous month" v-on:click="get_games(prevMonth,prevYear)"
+                        style="background-color:darkslateblue;color:white">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i> Previous Month
+                </button>
+                <button id="next month" v-on:click="get_games(nextMonth,nextYear)"
+                        style="background-color:darkslateblue;color:white">
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i> Next Month
+                </button>
+                <br><br>
+
+                <div class="result_table"
+                     style="height:600px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;width:900px;">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Name</th>
+                            <th>Release date</th>
+                            <th>Details</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr v-for="game in game_list">
+                            <td><img style="width:90px;height:90px;" v-bind:src="game.coverThumb"></td>
+                            <td>${game.name}</td>
+                            <td>
+                                <table>
+                                    <tr v-for="releaseInfo in game.release">
+                                        <td>Platform: ${releaseInfo.platform}</td>
+                                        <td>Region: ${releaseInfo.region}</td>
+                                        <td>Date: ${releaseInfo.date}</td>
+                                    </tr>
+                                </table>
+                            </td>
+
+                            <td>
+                                <button class="fa fa-gamepad" id="get_game_data_button"
+                                        v-on:click="get_game_data(game.id)"
+                                        style="background-color:darkslateblue;color:white"></button>
+                            </td>
+                            <!---Debugging. probably can use to check whether or not the game is in the list from the monthly schedule
+                            <div class="user-game-list container">
+                            <td v-if="game.game_in_list=='plus'"> <button class="fa fa-plus-circle" id="add_game_to_list"  ></button></td>
+                            <td v-if="game.game_in_list=='minus'"> <button class="fa fa-minus-circle" id="remove_game_from_list"    ></button></td>
+
+                            </div> --->
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div id="user list" class="col-md-4" style="height:800px;">
+            <div class="title"><h2>Personal Gaming List</h2></div>
+            <div v-if="user_id=='null'">
+                Please log in to see your personal list of games.
+            </div>
+            <div v-else>
+                <button v-on:click="goto('messages')" style="width:250px;background-color:darkslateblue;color:white"><i
+                        class="fa fa-envelope-o"></i> Messages
+                </button>
+                <br><br>
+
+                <div v-if="user_game_list_size==0">
+                    Looks like you haven't saved any games! When you save games, it'll be displayed here!
+                </div>
+                <div v-if="user_game_list_size>0"
+                     style="height:600px;width:325px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
+                    <div v-for="game in user_game_list" class="container">
+                        <button id="get_game_data_button" v-on:click="get_game_data(game.id)"
+                                style="background-color:lightblue">
+                            <table>
+                                <tbody>
+                                <tr style="background-color:lightblue">
+                                    <td>
+                                        <div style="width:50px;"><img v-bind:src="game.thumb" width="100%"
+                                                                      class="preview_image"/></div>
+                                    </td>
+                                    <td>
+                                        <div style="width:200px;white-space: initial;word-wrap: break-word;">
+                                            ${game.name}
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div v-if="page=='messages'" class="container" id="messages page" style="height:800px;">
+        <div id="list of messages" class="col-md-8">
+            <div v-if="user_id=='null'">
+                Please log in to see your personal messages.
+            </div>
+            <div v-if="friend_name!=''">
+                <div class="title"><h2>Messaging with ${friend_name}</h2></div>
+                <div v-if="friend_games_list.length>1">
+                    Both yours and ${friend_name}'s game list have these games in common:
+                    <span v-for="game in friend_games_list">
+                         ${game}, 
+                    </span>
+                </div>
+                <div v-if="friend_games_list.length==1">
+                    Both yours and ${friend_name}'s game list have this game in common:
+                    <span v-for="game in friend_games_list">
+                         ${game}
+                    </span>
+                </div>
+                <div v-if="friend_games_list.length==0">
+                    You and ${friend_name} don't have any games in common. Perhaps you could offer some suggestions?
+                </div>
+                <div id="new message section">
+                    <form action="#" v-on:submit.prevent="add_chat_post()" class="form-horizontal"
+                          enctype="multipart/form-data" method="post">
+                        <div class="form-group" id="no_table_post_content">
+                            <div>
+                                <input class="form-control string" id="no_table_post_content"
+                                       v-model="form_post_content" type="text"/>
+                                <span class="help-block"></span>
+                            </div>
+                        </div>
+                        <div class="new-post-button" id="submit_record__row">
+                            <div>
+                                <input class="btn btn-primary" class="post-button" id="add_post_submit" type="submit"
+                                       value="Post"/>
+                                <input class="btn btn-warning" class="cancel-button" id="cancel_edit_submit"
+                                       type="reset" value="Clear"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="post_content">
+                    <div v-if="friend_chat_list.length!=0"
+                         style="height:500px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
+                        <div class="post" v-for="post in friend_chat_list">
+                            ${post.post_content}
+                            <br>
+                            <br>
+                            <div style="color:#0099ff">
+                                <table>
+
+                                    <td v-if="post.belongs_to_user==false" style="width:300px; text-align:left">
+                                        ${post.post_name}
+                                    </td>
+                                    <td v-if="post.belongs_to_user==true" style="width:300px; text-align:left"> You</td>
+                                    <td style="width:300px">Sent on ${post.created_on}</td>
+                                    <!--<td v-if="post.belongs_to_user==true"><button class="fa fa-trash-o" v-on:click="rem_game_post(post.id,game_data.id)"></button></td>-->
+
+
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="friend_chat_list.length==0">
+                        No messages found. Post a message above to get the ball rolling!
+                    </div>
+                </div>
+            </div>
+            <div v-if="friend_name==''">
                 <div class="title"><h2>Game Day Messages </h2></div>
                 Select a friend to start sending messages.
-             </div>
+            </div>
         </div>
-        <div id = "switch between messages" class="col-md-4">
-           <div class="title"><h2>Message List</h2></div>
-             <div v-if="user_id=='null'" style="height:400px;">
-                Please log in to see your personal list of messages
-             </div>
-             <div v-else>
-                <button class="btn orange" v-on:click="goto('calendar')" style="background-color:darkslateblue;color:white"> <i class="fa fa-calendar"></i> Calendar </button>
+        <div id="switch between messages" class="col-md-4">
+            <div class="title"><h2>Message List</h2></div>
+            <div v-if="user_id=='null'" style="height:400px;">
+                Please log in to see your personal list of messages.
+            </div>
+            <div v-else>
+                <button class="btn orange" v-on:click="goto('calendar')"
+                        style="background-color:darkslateblue;color:white"><i class="fa fa-calendar"></i> Calendar
+                </button>
                 <div v-if="friend_email_list.length==0">
-                   Looks like you don't have any ongoing messages (yet)! Start up a chat with someone on a game's page!
+                    Looks like you don't have any ongoing messages (yet)! Start up a chat with someone on a game's page!
                 </div>
-                <div v-if="friend_email_list.length>0" style="height:600px;width:300px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
-                    <div v-for="email in friend_email_list" class="container" >
+                <div v-if="friend_email_list.length>0"
+                     style="height:600px;width:300px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
+                    <div v-for="email in friend_email_list" class="container">
                         <div class="col-md-8 friend_list ">
-                            <button class="fa fa-envelope"  id="get_chat_button" v-on:click="get_chat(email.email)" style="background-color:orange;color:white"> </button> ${email.name}
-                             
-                        </div>   
+                            <button class="fa fa-envelope" id="get_chat_button" v-on:click="get_chat(email.email)"
+                                    style="background-color:orange;color:white"></button>
+                            ${email.name}
+
+                        </div>
                     </div>
                 </div>
-              </div>
-         </div>
-     </div>
-     <br>
+            </div>
+        </div>
+    </div>
     <br>
     <br>
     <br>
@@ -351,16 +435,17 @@
     <br>
     <br>
     <br>
-      <div class="title" align="left"><h2>Daily Gaming News</h2></div>
-     <div id = "Gaming News" class="gaming news">
-        <span v-if="gaming_news_response=='ok'" >
+    <br>
+    <div class="title" align="left"><h2>Daily Gaming News</h2></div>
+    <div id="Gaming News" class="gaming news">
+        <span v-if="gaming_news_response=='ok'">
             <div v-for="story in gaming_news" class="container">
                 <table style="table-layout:fixed">
                     <tr>
                     <td><div class="col-md-2 news_image">
                         <img v-bind:src="story.preview" width="250px" height="150px" class="preview_image"/>
                     </div></td>
-                    <td  width="650px"><div class="col-md-10 news_title ">
+                    <td width="650px"><div class="col-md-10 news_title ">
                         <h3>  <a v-bind:href="story.url" target="_blank">${story.title}</a> </h3>
                     </div></td>
                     </tr>
@@ -394,10 +479,10 @@
              </div>
               --->
         </span>
-        <span v-if="gaming_news_response=='error'" >
+        <span v-if="gaming_news_response=='error'">
             Sorry, we cannot retrieve gaming news right now.
         </span>
-     </div>
+    </div>
 
-<script src="{{=URL('static', 'js/default_index.js')}}"></script>
+    <script src="{{=URL('static', 'js/default_index.js')}}"></script>
 </div>
