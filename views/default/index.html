@@ -82,6 +82,21 @@
                             <td><b>Cover</b></td>
                             <td><img v-bind:src="game_data.coverReg"></td>
                         </tr>
+
+                        <tr>
+                            <td><b>Release</b></td>
+                            <td>
+                                <table>
+                                    <tr v-for="releaseInfo in game_data.release">
+                                        <td>Platform: ${releaseInfo.platform}</td>
+                                        <td>Region: ${releaseInfo.region}</td>
+                                        <td>Date: ${releaseInfo.date}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <!-- General Information -->
                         <tr>
                             <td><b>Storyline</b></td>
                             <td>${game_data.storyline}</td>
@@ -108,14 +123,17 @@
                                 <div v-for="theme in game_data.themes">${theme}</div>
                             </td>
                         </tr>
-
                         <tr>
-                            <td><b>Player mode</b></td>
+                            <td><b>Player Modes</b></td>
                             <td>
-                        <tr v-for="mode in game_data.gameModes">
-                            <td></td>
-                            <td> ${mode}</td>
+                                <div v-for="mode in game_data.gameModes">${mode}</div>
+                            </td>
                         </tr>
+                        <!-- End General Information -->
+
+
+                        <!-- TODO: Find some way to make this look nice... -->
+                        <!-- Media -->
                         <tr>
                             <td><b>Screenshots</b></td>
                             <td>
@@ -133,16 +151,12 @@
                                 <embed v-bind:src="vid.vidURL">
                             </td>
                         </tr>
-                        <tr>
-                            <td><b>Release&nbsp;</b></td>
-                            <td>
-                        <tr v-for="releaseInfo in game_data.release">
-                            <td></td>
-                            <td>Platform: ${releaseInfo.platform}
-                                Region: ${releaseInfo.region}
-                                Date: ${releaseInfo.date}
-                            </td>
-                        </tr>
+                        <!-- End Media -->
+
+
+
+
+
                         <tr>
                             <td>How many people have added this game to their Personal Gaming List:</td>
                             <td v-if="game_data.game_likes != 1">
@@ -154,6 +168,9 @@
                                 <div v-if="game_data.game_in_list=='minus'"> (That's you!)</div>
                             </td>
                         </tr>
+
+
+
                         </tbody>
                     </table>
 
@@ -199,16 +216,16 @@
                                         <tbody>
                                         <tr>
                                             <br>
-                                            <div style="width:300px; text-align:left">Posted by ${post.post_name}</div>
-                                            <div style="width:300px">Created on ${post.created_on}</div>
+                                            <div>Posted by ${post.post_name} on ${post.created_on}</div>
                                             <div v-if="post.belongs_to_user==true">
-                                                <button class="fa fa-trash-o"
-                                                        v-on:click="rem_game_post(post.id,game_data.id)"></button>
+                                                <button v-on:click="rem_game_post(post.id,game_data.id)">
+                                                    <i class="fa fa-trash-o"></i> Delete
+                                                </button>
                                             </div>
                                             <div v-if="user_id!='null'">
                                                 <div v-if="post.belongs_to_user==false">
-                                                    <button v-on:click="start_chat(post.user_email)"><i
-                                                            class="fa fa-envelope-o"></i> Message ${post.post_name}
+                                                    <button v-on:click="start_chat(post.user_email)">
+                                                        <i class="fa fa-envelope-o"></i> Message ${post.post_name}
                                                     </button>
                                                 </div>
                                             </div>
@@ -223,6 +240,7 @@
                         </div>
 
                     </div>
+                    <!-- End Comments Section -->
                 </div>
             </div>
 
