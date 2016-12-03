@@ -42,11 +42,11 @@
 
 <div id="vue-div" class="display:none">
 
-
+    <!-- Calender Section -->
     <div v-if="page=='calendar'" id="calendar page" style="height:600px;">
         <div id="main game and calendar" class="col-md-6">
 
-            <!--Game Info-->
+            <!-- Details -->
             <div v-if="game_data!='null'" class="game_table">
                 <div class="title"><h2>${game_data.name}</h2></div>
                 <button id="return calendar" v-on:click="goto('calendar')" style="background-color:darkslateblue;color:white">
@@ -68,10 +68,11 @@
                      style="height:600px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;width: 900px;">
                     <table>
                         <tbody>
+                        <!--
                         <tr>
                             <td><b>Name</b></td>
                             <td>${game_data.name}</td>
-                        </tr>
+                        </tr>-->
                         <!--
                         <tr>
                             <td><b>ID</b></td>
@@ -79,8 +80,7 @@
                         </tr>-->
                         <tr>
                             <td><b>Cover</b></td>
-                            <td><img v-bind:src="game_data.coverReg">
-                            </td>
+                            <td><img v-bind:src="game_data.coverReg"></td>
                         </tr>
                         <tr>
                             <td><b>Storyline</b></td>
@@ -93,24 +93,22 @@
                         <tr>
                             <td><b>Publishers</b></td>
                             <td>
-                        <tr v-for="pub in game_data.publishers">
-                            <td></td>
-                            <td> ${pub}</td>
+                                <div v-for="pub in game_data.publishers">${pub}</div>
+                            </td>
                         </tr>
                         <tr>
                             <td><b>Developers</b></td>
                             <td>
-                        <tr v-for="dev in game_data.developers">
-                            <td></td>
-                            <td> ${dev}</td>
+                                <div v-for="dev in game_data.developers">${dev}</div>
+                            </td>
                         </tr>
                         <tr>
                             <td><b>Themes</b></td>
                             <td>
-                        <tr v-for="theme in game_data.themes">
-                            <td></td>
-                            <td> ${theme}</td>
+                                <div v-for="theme in game_data.themes">${theme}</div>
+                            </td>
                         </tr>
+
                         <tr>
                             <td><b>Player mode</b></td>
                             <td>
@@ -160,7 +158,7 @@
                     </table>
 
 
-                    <!--Game Comments Section-->
+                    <!-- Comments Section -->
                     <div v-if="user_id!='null'" id="new message section">
                         <form action="#" v-on:submit.prevent="add_game_post(game_data.id)" class="form-horizontal"
                               enctype="multipart/form-data" method="post">
@@ -229,7 +227,7 @@
             </div>
 
 
-            <!--Game Calendar-->
+            <!-- Game Calendar -->
             <div v-else>
                 <div class="title"><h2>Game Calendar - ${monthDisplay} ${yearDisplay}</h2></div>
                 <button id="previous month" v-on:click="get_games(prevMonth,prevYear)"
@@ -327,6 +325,9 @@
             </div>
         </div>
     </div>
+
+
+    <!-- Messages Section -->
     <div v-if="page=='messages'" class="container" id="messages page" style="height:800px;">
         <div id="list of messages" class="col-md-8">
             <div v-if="user_id=='null'">
@@ -408,8 +409,10 @@
             </div>
             <div v-else>
                 <button class="btn orange" v-on:click="goto('calendar')"
-                        style="background-color:darkslateblue;color:white"><i class="fa fa-calendar"></i> Calendar
+                        style="background-color:darkslateblue;color:white"><i class="fa fa-calendar"></i> Return to Calendar
                 </button>
+                <br><br>
+
                 <div v-if="friend_email_list.length==0">
                     Looks like you don't have any ongoing messages (yet)! Start up a chat with someone on a game's page!
                 </div>
@@ -436,6 +439,8 @@
     <br>
     <br>
     <br>
+
+    <!-- News Section -->
     <div class="title" align="left"><h2>Daily Gaming News</h2></div>
     <div id="Gaming News" class="gaming news">
         <span v-if="gaming_news_response=='ok'">
