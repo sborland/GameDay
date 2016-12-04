@@ -47,7 +47,7 @@
         <div id="main game and calendar" class="col-md-6">
 
             <!-- Details -->
-            <div v-if="game_data!='null'" class="game_table">
+            <div v-if="game_data!='null'" class="game_table" style="margin-left:10%">
                 <div class="title"><h2>${game_data.name}</h2></div>
                 <button id="return calendar" v-on:click="goto('calendar')" style="background-color:darkslateblue;color:white">
                     <i class="fa fa-calendar"></i> Return to Calendar
@@ -62,6 +62,14 @@
                         v-on:click="rem_game_list(game_data.id)" style="background-color:red;color:white">
                     <i class="fa fa-minus-circle"></i> Remove from Personal Game List
                 </button>
+                <span v-if="game_data.game_likes != 1">
+                    ${game_data.game_likes} people have this in their Personal Game List!
+                    <span v-if="game_data.game_in_list=='minus'"> (Including you!)</span>
+                </span>
+                <span v-if="game_data.game_likes == 1">
+                    ${game_data.game_likes} person has this in their Personal Game List!
+                    <span v-if="game_data.game_in_list=='minus'"> (That's you!)</span>
+                </span>
                 <br><br>
 
                 <div id="game content"
@@ -153,24 +161,6 @@
                         </tr>
                         <!-- End Media -->
 
-
-
-
-
-                        <tr>
-                            <td>How many people have added this game to their Personal Game List:</td>
-                            <td v-if="game_data.game_likes != 1">
-                                ${game_data.game_likes} people have this game in their Personal Game List!
-                                <div v-if="game_data.game_in_list=='minus'"> (Including you!)</div>
-                            </td>
-                            <td v-if="game_data.game_likes == 1">
-                                ${game_data.game_likes} person has this game in their Personal Game List!
-                                <div v-if="game_data.game_in_list=='minus'"> (That's you!)</div>
-                            </td>
-                        </tr>
-
-
-
                         </tbody>
                     </table>
 
@@ -247,7 +237,7 @@
 
 
             <!-- Game Calendar -->
-            <div v-else>
+            <div v-else style="margin-left:10%">
                 <div class="title"><h2>Game Calendar - ${monthDisplay} ${yearDisplay}</h2></div>
                 <button id="previous month" v-on:click="get_games(prevMonth,prevYear)"
                         style="background-color:darkslateblue;color:white">
@@ -304,7 +294,7 @@
             </div>
         </div>
 
-        <div id="user list" class="col-md-4" style="height:800px;">
+        <div id="user list" class="col-md-4" style="height:800px;margin-left:10%">
             <div class="title"><h2>Personal Game List</h2></div>
             <div v-if="user_id=='null'">
                 Please log in to see your personal list of games.
@@ -316,7 +306,9 @@
                 <br><br>
 
                 <div v-if="user_game_list_size==0">
-                    Looks like you haven't saved any games! When you save games, it'll be displayed here!
+                    Looks like you haven't saved any games!
+                    <br>
+                    When you save games, it'll be displayed here!
                 </div>
                 <div v-if="user_game_list_size>0"
                      style="height:600px;width:325px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
@@ -441,9 +433,9 @@
                 <div v-if="friend_email_list.length>0"
                      style="height:600px;width:300px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;">
                     <div v-for="email in friend_email_list" class="container">
-                        <div class="col-md-8 friend_list ">
+                        <div class="col-md-8 friend_list" style="padding:4px">
                             <button class="fa fa-envelope" id="get_chat_button" v-on:click="get_chat(email.email)"
-                                    style="background-color:orange;color:white"></button>
+                                    style="background-color:orange;color:white;"></button>
                             ${email.name}
 
                         </div>
@@ -462,10 +454,10 @@
                 <table style="table-layout:fixed">
                     <tr>
                     <td><div class="col-md-2 news_image">
-                        <img v-bind:src="story.preview" width="250px" height="150px" class="preview_image"/>
+                        <img v-bind:src="story.preview" width="200px" height="100px" class="preview_image"/>
                     </div></td>
                     <td width="650px"><div class="col-md-10 news_title ">
-                        <h3>  <a v-bind:href="story.url" target="_blank">${story.title}</a> </h3>
+                        <h4><a v-bind:href="story.url" target="_blank">${story.title}</a></h4>
                     </div></td>
                     </tr>
                 </table>
