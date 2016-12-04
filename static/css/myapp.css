@@ -21,3 +21,8 @@
   -webkit-border-radius: 16px;
   border-radius: 16px;
 }
+
+#gamedaycalendar {
+  font-family: "Lucida Console", "Lucida Sans Typewriter", monaco, "Bitstream Vera Sans Mono", monospace;
+  font-size: 24px;
+}

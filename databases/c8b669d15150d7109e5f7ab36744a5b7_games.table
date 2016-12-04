@@ -44,20 +44,20 @@ p16
 (dp17
 S'sortable'
 p18
-I4
+L4L
 sS'sql'
 p19
 S'INTEGER REFERENCES post (id) ON DELETE CASCADE  '
 p20
 sS'length'
 p21
-I512
+L512L
 sS'notnull'
 p22
-I00
+L0L
 sS'unique'
 p23
-I00
+L0L
 sS'type'
 p24
 S'reference post'
