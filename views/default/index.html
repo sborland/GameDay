@@ -76,16 +76,6 @@
                      style="height:600px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;width: 900px;">
                     <table>
                         <tbody>
-                        <!--
-                        <tr>
-                            <td><b>Name</b></td>
-                            <td>${game_data.name}</td>
-                        </tr>-->
-                        <!--
-                        <tr>
-                            <td><b>ID</b></td>
-                            <td>${game_data.id}</td>
-                        </tr>-->
                         <tr>
                             <td><b>Cover</b></td>
                             <td><img v-bind:src="game_data.coverReg"></td>
@@ -139,8 +129,6 @@
                         </tr>
                         <!-- End General Information -->
 
-
-                        <!-- TODO: Find some way to make this look nice... -->
                         <!-- Media -->
                         <tr>
                             <td><b>Screenshots</b></td>
@@ -167,6 +155,7 @@
 
                     <!-- Comments Section -->
                     <!-- TODO: Ditch this code and use Henry's so that it actually updates after posting!-->
+                    <div class="comments"><h2>Comments</h2></div>
                     <div v-if="user_id!='null'" id="new message section">
                         <form action="#" v-on:submit.prevent="add_game_post(game_data.id)" class="form-horizontal"
                               enctype="multipart/form-data" method="post">
@@ -462,33 +451,6 @@
                     </tr>
                 </table>
             </div>
-            <!--------Another way to display---------
-             <div class="col-md-1 news_image">
-                <img v-bind:src="gaming_news[0].preview" width="100%" class="preview_image"/>
-             </div>
-             <div class="col-md-2 news_title ">
-                <h4> <a v-bind:href="gaming_news[0].url" target="_blank">${gaming_news[0].title}</a> </h4>
-             </div>
-             
-            <div class="col-md-1 news_image">
-                <img v-bind:src="gaming_news[1].preview" width="100%" class="preview_image"/>
-             </div>
-             <div class="col-md-2 news_title ">
-               <h4>  <a v-bind:href="gaming_news[1].url" target="_blank">${gaming_news[1].title}</a> </h4>
-             </div>
-             <div class="col-md-1 news_image">
-                <img v-bind:src="gaming_news[2].preview" width="100%" class="preview_image"/>
-             </div>
-             <div class="col-md-2 news_title ">
-              <h4>   <a v-bind:href="gaming_news[2].url" target="_blank">${gaming_news[2].title}</a> </h4>
-             </div>
-             <div class="col-md-1 news_image">
-                <img v-bind:src="gaming_news[3].preview" width="100%" class="preview_image"/>
-             </div>
-             <div class="col-md-2 news_title ">
-               <h4>  <a v-bind:href="gaming_news[3].url" target="_blank">${gaming_news[3].title}</a> </h4>
-             </div>
-              --->
         </span>
         <span v-if="gaming_news_response=='error'">
             Sorry, we cannot retrieve gaming news right now.
