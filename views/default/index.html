@@ -154,15 +154,14 @@
 
 
                     <!-- Comments Section -->
-                    <!-- TODO: Ditch this code and use Henry's so that it actually updates after posting!-->
                     <div class="comments"><h2>Comments</h2></div>
                     <div v-if="user_id!='null'" id="new message section">
                         <form action="#" v-on:submit.prevent="add_game_post(game_data.id)" class="form-horizontal"
                               enctype="multipart/form-data" method="post">
                             <div class="form-group" id="no_table_post_content">
-                                <div>
+                                <div style="padding-left: 20px; padding-right: 20px">
                                     <textarea class="form-control string" id="no_table_post_content"
-                                              v-model="form_post_content" type="text" rows="2"></textarea>
+                                              v-model="form_post_content"></textarea>
                                     <span class="help-block"></span>
                                 </div>
                             </div>
@@ -177,16 +176,18 @@
                         </form>
                     </div>
                     <br>
-                    <div v-if="more_post" class="go forward posts">
-                        <button class="fa fa-arrow-left" v-on:click="get_game_posts(index_post,'more',game_data.id)"
-                                style="background-color:darkslateblue;color:white"> Older Comments
+                    <span v-if="more_post" class="go forward posts">
+                        <button v-on:click="get_game_posts(index_post,'more',game_data.id)"
+                                style="background-color:darkslateblue;color:white">
+                            <i class="fa fa-arrow-left"></i> Older Comments
                         </button>
-                    </div>
-                    <div v-if="less_post" class="go back posts">
-                        <button class="fa fa-arrow-right" v-on:click="get_game_posts(index_post,'less',game_data.id)"
-                                style="background-color:darkslateblue;color:white"> Newer Comments
+                    </span>
+                    <span v-if="less_post" class="go back posts">
+                        <button v-on:click="get_game_posts(index_post,'less',game_data.id)"
+                                style="background-color:darkslateblue;color:white">
+                            <i class="fa fa-arrow-right"></i> Newer Comments
                         </button>
-                    </div>
+                    </span>
                     <div class="post_content">
                         <div v-if="game_posts.length!=0">
                             <div class="post" v-for="post in game_posts">
@@ -283,7 +284,8 @@
             </div>
         </div>
 
-        <div id="user list" class="col-md-4" style="height:800px;margin-left:10%">
+        <!-- Personal Games List -->
+        <div id="user list" class="col-md-4" style="height:800px;margin-left:8%">
             <div class="title"><h2>Personal Game List</h2></div>
             <div v-if="user_id=='null'">
                 Please log in to see your personal list of games.
@@ -367,6 +369,7 @@
                                        value="Post"/>
                                 <input class="btn btn-warning" class="cancel-button" id="cancel_edit_submit"
                                        type="reset" value="Clear"/>
+
                             </div>
                         </div>
                     </form>
@@ -436,7 +439,7 @@
 
 
     <!-- News Section -->
-    <div class="title" align="left" style="margin-top:15%"><h2>Daily Gaming News</h2></div>
+    <div class="title" align="left" style="margin-top:12%"><h2>Daily Gaming News</h2></div>
     <div id="Gaming News" class="gaming news">
         <span v-if="gaming_news_response=='ok'">
             <div v-for="story in gaming_news" class="container">

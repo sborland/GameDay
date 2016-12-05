@@ -155,8 +155,8 @@ var app = function() {
         var add_posting_url = add_game_post_url+ "?" + $.param(pp)
         $.post(add_posting_url, 
             function (data) {
+                self.get_game_posts(0,'more',self.vue.game_data.id);
             });
-            self.get_game_posts(0,'more',self.vue.game_data.id);
             self.vue.form_post_content=null;
     };
     
@@ -224,11 +224,7 @@ var app = function() {
             }
             self.vue.form_post_content=null;
     };
-    
-    
-    
-    
-    
+
     //----------Gaming News-------------//
     
     //gets gaming news from Reddit
