@@ -5,7 +5,7 @@
 # Customize your APP title, subtitle and menus here
 # ----------------------------------------------------------------------------------------------------------------------
 
-response.logo = A(B('GameDayCalendar'), XML('&trade;&nbsp;'),
+response.logo = A(B('Game Day'), XML('&trade;&nbsp;'),
                   _class="navbar-brand", _href="",
                   _id="gamedaycalendar")
 response.title = request.application.replace('_', ' ').title()
