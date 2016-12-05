@@ -22,7 +22,7 @@ sS'type'
 p10
 S'string'
 p11
-ssS'game_likes_json'
+ssS'game_postings_json'
 p12
 (dp13
 g4
@@ -30,7 +30,7 @@ I512
 sg5
 I00
 sg6
-I3
+I4
 sg7
 S'TEXT'
 p14
@@ -79,7 +79,7 @@ I00
 sg10
 S'id'
 p29
-ssS'game_postings_json'
+ssS'game_likes_json'
 p30
 (dp31
 g4
@@ -87,7 +87,7 @@ I512
 sg5
 I00
 sg6
-I4
+I3
 sg7
 S'TEXT'
 p32

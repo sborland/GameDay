@@ -439,7 +439,7 @@
 
 
     <!-- News Section -->
-    <div class="title" align="left" style="margin-top:12%"><h2>Daily Gaming News</h2></div>
+    <div class="title" align="left" style="margin-top:12%;margin-left:110px"><h2>Daily Gaming News</h2></div>
     <div id="Gaming News" class="gaming news">
         <span v-if="gaming_news_response=='ok'">
             <div v-for="story in gaming_news" class="container">
@@ -455,7 +455,7 @@
                 </table>
             </div>
         </span>
-        <span v-if="gaming_news_response=='error'">
+        <span v-if="gaming_news_response=='error'" style="margin-left:112px">
             Sorry, we cannot retrieve gaming news right now.
         </span>
     </div>
