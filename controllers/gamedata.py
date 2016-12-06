@@ -21,7 +21,7 @@ import requests
 import time, datetime,json,random,string
 
 #GLOBAL VARIABLES DON'T TOUCH#
-MONTHS = {'01' : "January",'02' : "February",'03' : "March",'04' : "April",'06' : "May",'07' : "June",'08' : "July",'09' : "August",'10' : "September",'11' : "November",'12' : "December",
+MONTHS = {'01' : "January",'02' : "February",'03' : "March",'04' : "April",'05' : "May",'06' : "June",'07' : "July",'08' : "August",'09' : "September",'10': "October", '11' : "November",'12' : "December",
 }
 PLATFORMS ={
 "132" : "Amazon Fire TV", "131" : "Nintendo PlayStation", "130" : "NX", "129" : "Texas Instruments TI-99", "128" : "PC Engine SuperGrafx", "127" : "Fairchild Channel F", "126" : "TRS-80", "125" : "PC-8801", "124" : "SwanCrystal", "123" : "WonderSwan Color", "122" : "Nuon", "121" : "Sharp X68000", "120" : "Neo Geo Pocket Color", "119" : "Neo Geo Pocket", "118" : "FM Towns", "117" : "Philips CD-i", "116" : "Acorn Archimedes", "115" : "Apple IIGS", "114" : "Amiga CD32", "113" : "OnLive Game System", "112" : "Microcomputer", "111" : "Imlac PDS-1", "110" : "PLATO", "109" : "CDC Cyber 70", "108" : "PDP-11", "107" : "Call-A-Computer time-shared mainframe computer system", "106" : "SDS Sigma 7", "105" : "HP 3000", "104" : "HP 2100", "103" : "PDP-7", "102" : "EDSAC", "101" : "Ferranti Nimrod Computer", "100" : "Analogue electronics", "99" : "Family Computer", "98" : "DEC GT40", "97" : "PDP-8", "96" : "PDP-10", "95" : "PDP-1", "94" : "Commodore Plus/4", "93" : "Commodore 16", "92" : "SteamOS", "91" : "Bally Astrocade", "90" : "Commodore PET", "89" : "Microvision", "88" : "Odyssey", "87" : "Virtual Boy", "86" : "TurboGrafx-16/PC Engine", "85" : "Donner Model 30", "84" : "SG-1000", "82" : "Web browser", "80" : "Neo Geo AES", "79" : "Neo Geo MVS", "78" : "Sega CD", "77" : "Sharp X1", "75" : "Apple II", "74" : "Windows Phone", "73" : "BlackBerry OS", "72" : "Ouya", "71" : "Commodore VIC-20", "70" : "Vectrex", "69" : "BBC Microcomputer System", "68" : "ColecoVision", "67" : "Intellivision", "66" : "Atari 5200", "65" : "Atari 8-bit", "64" : "Sega Master System", "63" : "Atari ST/STE", "62" : "Atari Jaguar", "61" : "Atari Lynx", "60" : "Atari 7800", "59" : "Atari 2600", "58" : "Super Famicom", "57" : "WonderSwan", "56" : "WiiWare", "55" : "Mobile", "53" : "MSX2", "52" : "Arcade", "51" : "Family Computer Disk System", "50" : "3DO Interactive Multiplayer", "49" : "Xbox One", "48" : "PlayStation 4", "47" : "Virtual Console (Nintendo)", "46" : "PlayStation Vita", "45" : "PlayStation Network", "44" : "Tapwave Zodiac", "42" : "N-Gage", "41" : "Wii U", "39" : "iOS", "38" : "PlayStation Portable", "37" : "Nintendo 3DS", "36" : "Xbox Live Arcade", "35" : "Sega Game Gear", "34" : "Android", "33" : "Game Boy", "32" : "Sega Saturn", "30" : "Sega 32X", "29" : "Sega Mega Drive/Genesis", "27" : "MSX", "26" : "ZX Spectrum", "25" : "Amstrad CPC", "24" : "Game Boy Advance", "23" : "Dreamcast", "22" : "Game Boy Color", "21" : "Nintendo GameCube", "20" : "Nintendo DS", "19" : "Super Nintendo Entertainment System (SNES)", "18" : "Nintendo Entertainment System (NES)", "16" : "Amiga", "15" : "Commodore C64/128", "14" : "Mac", "13" : "PC DOS", "12" : "Xbox 360", "11" : "Xbox", "9" : "PlayStation 3", "8" : "PlayStation 2", "7" : "PlayStation", "6" : "PC (Microsoft Windows)", "5" : "Wii", "4" : "Nintendo 64", "3" : "Linux",    
@@ -44,7 +44,8 @@ GAMEMODES ={ "1":"Single Player", "2":"Multiplayer", "3":"Co-operative", "4":"Sp
 def get_games():
     month = int(request.vars.month)
     year = int(request.vars.year)
-    print "HERE!"
+    numMonth = month
+    numYear = year
     #handles Dec-Jan case where
     #December overlaps with January
     nextMonth=month+1
@@ -119,6 +120,7 @@ def get_games():
     #TODO: Throwing an error for a bad status code
     if((resWeekA.status_code==200) and (resWeekB.status_code==200) and (resWeekC.status_code==200)):
         #go through each week...
+        testTHIS=[]
         for week in gameMonth:
             weekResponse = week.json()
             for gameData in weekResponse:
@@ -136,41 +138,51 @@ def get_games():
                 
                 
                 
-
+               
                     
                 #the game's release date is divided up by information on
                 #region, platform and date. Region & Platform is added to global_variables
                 #See https://market.mashape.com/igdbcom/internet-game-database/overview
                 for releaseData in gameData['release_dates']:
-                    game = dict(
-                        name = gameData['name'].encode("utf-8"),
-                        id = gameData['id'],
-                        game_in_list = game_in_user_list,
-                        release = [],
-                        coverThumb = "https://www.naplesgarden.org/wp-content/themes/naples_botanical/img/notfound.jpg",
-                        coverReg = "https://www.naplesgarden.org/wp-content/themes/naples_botanical/img/notfound.jpg"
-                    )
                     
-                    if "cover" in gameData:
-                        game['coverThumb'] = IBGDimages+SIZES['thumb']+"/"+gameData['cover']["cloudinary_id"]+".jpg"
-                        game['coverReg'] = IBGDimages+SIZES['small']+"/"+gameData['cover']["cloudinary_id"]+".jpg"
+                    #pattern = '%Y-%b-%d'
+                    #rdate = (str(releaseData['human'])).lower()
+                    #epoch = int(time.mktime(time.strptime(rdate, pattern)))
+                    epochdate =releaseData.values()[-1:]
+                    if len(epochdate)!=0: 
+                       if isinstance( epochdate[0], ( int, long ) ):
+                            #print releaseData['date']
+                            game = dict(
+                                name = gameData['name'].encode("utf-8"),
+                                id = gameData['id'],
+                                game_in_list = game_in_user_list,
+                                release = [],
+                                coverThumb = "https://www.naplesgarden.org/wp-content/themes/naples_botanical/img/notfound.jpg",
+                                coverReg = "https://www.naplesgarden.org/wp-content/themes/naples_botanical/img/notfound.jpg"
+                            )
+                            
+                            if "cover" in gameData:
+                                game['coverThumb'] = IBGDimages+SIZES['thumb']+"/"+gameData['cover']["cloudinary_id"]+".jpg"
+                                game['coverReg'] = IBGDimages+SIZES['small']+"/"+gameData['cover']["cloudinary_id"]+".jpg"
+                                
+                            s = int(epochdate[0])/1000.0
+                            realDate = datetime.datetime.fromtimestamp(s).strftime('%d-%m-%Y.%f')
+                            humDate = datetime.datetime.fromtimestamp(s).strftime('%d %b %Y')
+                            #Only grab the relevant release dates
+                            if (s>=epochStart) and (s<epochFinish):
+                                gameRelease = dict(
+                                    date = humDate,
+                                    numdate = realDate,
+                                    #get the platform name
+                                    platform = PLATFORMS[str(releaseData['platform'])],
+                                    region = "World Wide"
+                                )
+                                if 'region' in releaseData:
+                                    gameRelease['region']= REGIONS[str(releaseData['region'])]
+                                game['release'].append(gameRelease)
+                                game_list.append(game)
                         
-                    s = int(releaseData['date'])/1000.0
-                    realDate = datetime.datetime.fromtimestamp(s).strftime('%d-%m-%Y.%f')
-                    #Only grab the relevant release dates
-                    if (s>=epochStart) and (s<epochFinish):
-                        gameRelease = dict(
-                            date = realDate,
-                            #get the platform name
-                            platform = PLATFORMS[str(releaseData['platform'])],
-                            region = "World Wide"
-                        )
-                        if 'region' in releaseData:
-                            gameRelease['region']= REGIONS[str(releaseData['region'])]
-                        game['release'].append(gameRelease)
-                        game_list.append(game)
-                        
-        game_list = sorted(game_list, key = lambda k: (k['release'][0]['date'],k['id']))
+        game_list = sorted(game_list, key = lambda k: (k['release'][0]['numdate'],k['id']))
     else:
         StatusRequest = "ERROR"
         
@@ -179,7 +191,8 @@ def get_games():
 
     return response.json(dict(
         game_list=game_list,monthDisplay=monthDisplay,yearDisplay=yearDisplay,
-        NextMonth=NextMonth,NextYear=NextYear,PrevYear=prevYear,PrevMonth=prevMonth
+        NextMonth=NextMonth,NextYear=NextYear,PrevYear=prevYear,PrevMonth=prevMonth,
+        test = testTHIS
     ))
 
 #helper for get_games - pulls all the games that are going to be released between two dates
@@ -314,7 +327,7 @@ def get_game_data():
             
          for releaseData in res['release_dates']:
              s = int(releaseData['date'])/1000.0
-             realDate = datetime.datetime.fromtimestamp(s).strftime('%d-%m-%Y.%f')
+             realDate = datetime.datetime.fromtimestamp(s).strftime('%d %b %Y')
              gameRelease = dict(
                    date = realDate,
                    #get the platform name
@@ -577,8 +590,4 @@ def rem_game_postings():
 #testing
 #get_games(11,2016)
 #get_game_data('359')
-
-
-
-
 

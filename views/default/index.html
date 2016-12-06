@@ -238,7 +238,7 @@
                     <i class="fa fa-arrow-right" aria-hidden="true"></i> Next Month
                 </button>
                 <br><br>
-
+                
                 <div class="result_table"
                      style="height:600px;overflow:scroll;overflow-y:scroll;overflow-x:hidden;width:900px;">
                     <table>
@@ -246,24 +246,21 @@
                         <tr>
                             <th></th>
                             <th>Name</th>
+                            <th>Platform</th>
+                            <th>Region</th>
                             <th>Release date</th>
+                            
                             <th>Details</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="game in game_list">
+                        <tr v-for="game in game_list" >
+                            
                             <td><img style="width:90px;height:90px;" v-bind:src="game.coverThumb"></td>
-                            <td>${game.name}</td>
-                            <td>
-                                <table>
-                                    <tr v-for="releaseInfo in game.release">
-                                        <td>Platform: ${releaseInfo.platform}</td>
-                                        <td>Region: ${releaseInfo.region}</td>
-                                        <td>Date: ${releaseInfo.date}</td>
-                                    </tr>
-                                </table>
-                            </td>
-
+                            <td style=" font-weight: bold;">${game.name}</h5>
+                            <td >${game.release[0].platform} </td>
+                            <td >${game.release[0].region} </td>
+                            <td> ${game.release[0].date}</td>
                             <td>
                                 <button class="fa fa-gamepad" id="get_game_data_button"
                                         v-on:click="get_game_data(game.id)"
@@ -308,12 +305,12 @@
                                 style="background-color:lightblue">
                             <table>
                                 <tbody>
-                                <tr style="background-color:lightblue">
-                                    <td>
+                                <tr style="background-color:lightblue;border: 0">
+                                    <td style="border: 0">
                                         <div style="width:50px;"><img v-bind:src="game.thumb" width="100%"
                                                                       class="preview_image"/></div>
                                     </td>
-                                    <td>
+                                    <td style="border: 0">
                                         <div style="width:200px;white-space: initial;word-wrap: break-word;">
                                             ${game.name}
                                         </div>
@@ -386,11 +383,11 @@
                             <div style="color:#0099ff">
                                 <table>
 
-                                    <td v-if="post.belongs_to_user==false" style="width:300px; text-align:left">
+                                    <td v-if="post.belongs_to_user==false" style="width:300px; text-align:left;border: 0;">
                                         ${post.post_name}
                                     </td>
-                                    <td v-if="post.belongs_to_user==true" style="width:300px; text-align:left"> You</td>
-                                    <td style="width:300px">Sent on ${post.created_on}</td>
+                                    <td v-if="post.belongs_to_user==true" style="width:300px; text-align:left;border: 0"> You</td>
+                                    <td style="width:300px;border: 0">Sent on ${post.created_on}</td>
                                     <!--<td v-if="post.belongs_to_user==true"><button class="fa fa-trash-o" v-on:click="rem_game_post(post.id,game_data.id)"></button></td>-->
 
 
@@ -439,11 +436,13 @@
 
 
     <!-- News Section -->
-    <div class="title" align="left" style="margin-top:12%;margin-left:110px"><h2>Daily Gaming News</h2></div>
+    
     <div id="Gaming News" class="gaming news">
+        
         <span v-if="gaming_news_response=='ok'">
+            <div class="title" style="margin-top:12%;margin-left:700px;"><h2>Daily Gaming News</h2></div>
             <div v-for="story in gaming_news" class="container">
-                <table style="table-layout:fixed">
+                <table style="table-layout:fixed;align:left">
                     <tr>
                     <td><div class="col-md-2 news_image">
                         <img v-bind:src="story.preview" width="200px" height="100px" class="preview_image"/>
@@ -456,6 +455,7 @@
             </div>
         </span>
         <span v-if="gaming_news_response=='error'" style="margin-left:112px">
+            <div class="title" style="margin-top:12%;"><h2>Daily Gaming News</h2></div>
             Sorry, we cannot retrieve gaming news right now.
         </span>
     </div>
